@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_ui/src/widgets/inherited_l10n.dart';
+import 'package:flutter_chat_ui/src/widgets/inherited_replied_message.dart';
 import 'package:intl/intl.dart';
 import 'package:photo_view/photo_view.dart' show PhotoViewComputedScale;
 import 'package:scroll_to_index/scroll_to_index.dart';
@@ -39,8 +41,10 @@ class Chat extends StatefulWidget {
     this.bubbleRtlAlignment = BubbleRtlAlignment.right,
     this.customBottomWidget,
     this.customDateHeaderText,
+    this.customInputReplyMessageBuilder,
     this.customMessageBuilder,
     this.customStatusBuilder,
+    this.customReplyMessageBuilder,
     this.dateFormat,
     this.dateHeaderBuilder,
     this.dateHeaderThreshold = 900000,
@@ -135,6 +139,11 @@ class Chat extends StatefulWidget {
   /// See [Message.customStatusBuilder].
   final Widget Function(types.Message message, {required BuildContext context})?
       customStatusBuilder;
+  /// Allows you to replace the default ReplyMessage widget inside Input widget
+  final Widget Function(types.Message)? customInputReplyMessageBuilder;
+
+  /// Allows you to replace the default ReplyMessage widget inside Message widget
+  final Widget Function(types.Message)? customReplyMessageBuilder;
 
   /// Allows you to customize the date format. IMPORTANT: only for the date,
   /// do not return time here. See [timeFormat] to customize the time format.
@@ -258,8 +267,9 @@ class Chat extends StatefulWidget {
   final void Function(types.TextMessage, types.PreviewData)?
       onPreviewDataFetched;
 
-  /// See [Input.onSendPressed].
-  final void Function(types.PartialText) onSendPressed;
+  /// See [Input.onSendPressed]
+  final void Function(types.PartialText, {types.Message? repliedMessage})
+      onSendPressed;
 
   /// See [ChatList.scrollController].
   /// If provided, you cannot use the scroll to message functionality.
@@ -336,6 +346,7 @@ class ChatState extends State<Chat> {
   PageController? _galleryPageController;
   bool _hadScrolledToUnreadOnOpen = false;
   bool _isImageViewVisible = false;
+  types.Message? _repliedMessage;
 
   /// Keep track of all the auto scroll indices by their respective message's id to allow animating to them.
   final Map<String, int> _autoScrollIndexById = {};
@@ -560,6 +571,7 @@ class ChatState extends State<Chat> {
           bubbleBuilder: widget.bubbleBuilder,
           bubbleRtlAlignment: widget.bubbleRtlAlignment,
           customMessageBuilder: widget.customMessageBuilder,
+          onMessageReply: _onMessageReply,
           customStatusBuilder: widget.customStatusBuilder,
           emojiEnlargementBehavior: widget.emojiEnlargementBehavior,
           fileMessageBuilder: widget.fileMessageBuilder,
@@ -606,6 +618,12 @@ class ChatState extends State<Chat> {
     }
   }
 
+  void _onCancelReplyPressed() {
+    setState(() {
+      _repliedMessage = null;
+    });
+  }
+
   void _onCloseGalleryPressed() {
     setState(() {
       _isImageViewVisible = false;
@@ -621,6 +639,18 @@ class ChatState extends State<Chat> {
     _galleryPageController = PageController(initialPage: initialPage);
     setState(() {
       _isImageViewVisible = true;
+    });
+  }
+
+  void _onMessageReply(BuildContext context, types.Message? message) {
+    setState(() {
+      _repliedMessage = message?.copyWith();
+    });
+  }
+
+  void _onPageChanged(int index) {
+    setState(() {
+      _imageViewIndex = index;
     });
   }
 
@@ -644,5 +674,80 @@ class ChatState extends State<Chat> {
       }
       i++;
     }
+  void _onSendPressed(types.PartialText message,
+      {types.Message? repliedMessage}) {
+    setState(() {
+      _repliedMessage = null;
+    });
+    widget.onSendPressed(message, repliedMessage: repliedMessage);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InheritedUser(
+      user: widget.user,
+      child: InheritedRepliedMessage(
+        repliedMessage: _repliedMessage,
+        child: InheritedChatTheme(
+          theme: widget.theme,
+          child: InheritedL10n(
+            l10n: widget.l10n,
+            child: Stack(
+              children: [
+                Container(
+                  color: widget.theme.backgroundColor,
+                  child: Column(
+                    children: [
+                      Flexible(
+                        child: widget.messages.isEmpty
+                            ? SizedBox.expand(
+                                child: _emptyStateBuilder(),
+                              )
+                            : GestureDetector(
+                                onTap: () {
+                                  FocusManager.instance.primaryFocus?.unfocus();
+                                  widget.onBackgroundTap?.call();
+                                },
+                                child: LayoutBuilder(
+                                  builder: (BuildContext context,
+                                          BoxConstraints constraints) =>
+                                      ChatList(
+                                    isLastPage: widget.isLastPage,
+                                    itemBuilder: (item, index) =>
+                                        _messageBuilder(item, constraints),
+                                    items: _chatMessages,
+                                    onEndReached: widget.onEndReached,
+                                    onEndReachedThreshold:
+                                        widget.onEndReachedThreshold,
+                                    scrollController: widget.scrollController,
+                                    scrollPhysics: widget.scrollPhysics,
+                                  ),
+                                ),
+                              ),
+                      ),
+                      widget.customBottomWidget ??
+                          Input(
+                            customInputReplyMessageBuilder:
+                                widget.customInputReplyMessageBuilder,
+                            isAttachmentUploading: widget.isAttachmentUploading,
+                            onAttachmentPressed: widget.onAttachmentPressed,
+                            onCancelReplyPressed: _onCancelReplyPressed,
+                            onSendPressed: _onSendPressed,
+                            onTextChanged: widget.onTextChanged,
+                            onTextFieldTap: widget.onTextFieldTap,
+                            sendButtonVisibilityMode:
+                                widget.sendButtonVisibilityMode,
+                            showUserNameForRepliedMessage: widget.showUserNames,
+                          ),
+                    ],
+                  ),
+                ),
+                if (_isImageViewVisible) _imageGalleryBuilder(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

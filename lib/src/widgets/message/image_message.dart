@@ -3,6 +3,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 import '../../conditional/conditional.dart';
 import '../../util.dart';
+import '../replied_message.dart';
 import '../state/inherited_chat_theme.dart';
 import '../state/inherited_user.dart';
 
@@ -15,18 +16,26 @@ class ImageMessage extends StatefulWidget {
   const ImageMessage({
     super.key,
     this.imageHeaders,
+    this.customReplyMessageBuilder,
     required this.message,
     required this.messageWidth,
+    required this.showUserNameForRepliedMessage,
   });
 
   /// See [Chat.imageHeaders].
   final Map<String, String>? imageHeaders;
 
-  /// [types.ImageMessage].
+  /// Allows you to replace the default ReplyMessage widget
+  final Widget Function(types.Message)? customReplyMessageBuilder;
+
+  /// [types.ImageMessage]
   final types.ImageMessage message;
 
   /// Maximum message width.
   final int messageWidth;
+
+  /// Show user name for replied message.
+  final bool showUserNameForRepliedMessage;
 
   @override
   State<ImageMessage> createState() => _ImageMessageState();
@@ -62,6 +71,18 @@ class _ImageMessageState extends State<ImageMessage> {
     super.dispose();
   }
 
+  Widget _repliedMessageBuilder(types.User user) => Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+        child: widget.customReplyMessageBuilder != null
+            ? widget.customReplyMessageBuilder!(widget.message.repliedMessage!)
+            : RepliedMessage(
+                messageAuthorId: widget.message.author.id,
+                repliedMessage: widget.message.repliedMessage,
+                showUserNames: widget.showUserNameForRepliedMessage,
+              ),
+      );
+
+  // ignore: member-ordering
   @override
   Widget build(BuildContext context) {
     final user = InheritedUser.of(context).user;
@@ -77,66 +98,78 @@ class _ImageMessageState extends State<ImageMessage> {
         color: user.id == widget.message.author.id
             ? InheritedChatTheme.of(context).theme.primaryColor
             : InheritedChatTheme.of(context).theme.secondaryColor,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
+        child: Column(
           children: [
-            Container(
-              height: 64,
-              margin: EdgeInsetsDirectional.fromSTEB(
-                InheritedChatTheme.of(context).theme.messageInsetsVertical,
-                InheritedChatTheme.of(context).theme.messageInsetsVertical,
-                16,
-                InheritedChatTheme.of(context).theme.messageInsetsVertical,
-              ),
-              width: 64,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: Image(
-                  fit: BoxFit.cover,
-                  image: _image!,
-                ),
-              ),
-            ),
-            Flexible(
-              child: Container(
-                margin: EdgeInsetsDirectional.fromSTEB(
-                  0,
-                  InheritedChatTheme.of(context).theme.messageInsetsVertical,
-                  InheritedChatTheme.of(context).theme.messageInsetsHorizontal,
-                  InheritedChatTheme.of(context).theme.messageInsetsVertical,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.message.name,
-                      style: user.id == widget.message.author.id
-                          ? InheritedChatTheme.of(context)
-                              .theme
-                              .sentMessageBodyTextStyle
-                          : InheritedChatTheme.of(context)
-                              .theme
-                              .receivedMessageBodyTextStyle,
-                      textWidthBasis: TextWidthBasis.longestLine,
+            if (widget.message.repliedMessage != null)
+              _repliedMessageBuilder(user),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 64,
+                  margin: EdgeInsetsDirectional.fromSTEB(
+                    InheritedChatTheme.of(context).theme.messageInsetsVertical,
+                    InheritedChatTheme.of(context).theme.messageInsetsVertical,
+                    16,
+                    InheritedChatTheme.of(context).theme.messageInsetsVertical,
+                  ),
+                  width: 64,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Image(
+                      fit: BoxFit.cover,
+                      image: _image!,
                     ),
-                    Container(
-                      margin: const EdgeInsets.only(
-                        top: 4,
-                      ),
-                      child: Text(
-                        formatBytes(widget.message.size.truncate()),
-                        style: user.id == widget.message.author.id
-                            ? InheritedChatTheme.of(context)
-                                .theme
-                                .sentMessageCaptionTextStyle
-                            : InheritedChatTheme.of(context)
-                                .theme
-                                .receivedMessageCaptionTextStyle,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                Flexible(
+                  child: Container(
+                    margin: EdgeInsetsDirectional.fromSTEB(
+                      0,
+                      InheritedChatTheme.of(context)
+                          .theme
+                          .messageInsetsVertical,
+                      InheritedChatTheme.of(context)
+                          .theme
+                          .messageInsetsHorizontal,
+                      InheritedChatTheme.of(context)
+                          .theme
+                          .messageInsetsVertical,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.message.name,
+                          style: user.id == widget.message.author.id
+                              ? InheritedChatTheme.of(context)
+                                  .theme
+                                  .sentMessageBodyTextStyle
+                              : InheritedChatTheme.of(context)
+                                  .theme
+                                  .receivedMessageBodyTextStyle,
+                          textWidthBasis: TextWidthBasis.longestLine,
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(
+                            top: 4,
+                          ),
+                          child: Text(
+                            formatBytes(widget.message.size.truncate()),
+                            style: user.id == widget.message.author.id
+                                ? InheritedChatTheme.of(context)
+                                    .theme
+                                    .sentMessageCaptionTextStyle
+                                : InheritedChatTheme.of(context)
+                                    .theme
+                                    .receivedMessageCaptionTextStyle,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -147,12 +180,19 @@ class _ImageMessageState extends State<ImageMessage> {
           maxHeight: widget.messageWidth.toDouble(),
           minWidth: 170,
         ),
-        child: AspectRatio(
-          aspectRatio: _size.aspectRatio > 0 ? _size.aspectRatio : 1,
-          child: Image(
-            fit: BoxFit.contain,
-            image: _image!,
-          ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (widget.message.repliedMessage != null)
+              _repliedMessageBuilder(user),
+            AspectRatio(
+              aspectRatio: _size.aspectRatio > 0 ? _size.aspectRatio : 1,
+              child: Image(
+                fit: BoxFit.contain,
+                image: _image!,
+              ),
+            ),
+          ],
         ),
       );
     }

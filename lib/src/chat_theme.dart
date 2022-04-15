@@ -35,7 +35,10 @@ const neutral1 = Color(0xff615e6e);
 /// N2.
 const neutral2 = Color(0xff9e9cab);
 
-/// N7.
+/// N2 with opacity
+const neutral2WithOpacity = Color(0x339e9cab);
+
+/// N7
 const neutral7 = Color(0xffffffff);
 
 /// N7 with opacity.
@@ -59,6 +62,9 @@ abstract class ChatTheme {
     required this.attachmentButtonIcon,
     required this.attachmentButtonMargin,
     required this.backgroundColor,
+    required this.closableRepliedMessageBoxDecoration,
+    required this.closableRepliedMessageImageMargin,
+    required this.closableRepliedMessagePadding,
     required this.dateDividerMargin,
     required this.dateDividerTextStyle,
     required this.deliveredIcon,
@@ -88,6 +94,10 @@ abstract class ChatTheme {
     required this.receivedMessageDocumentIconColor,
     required this.receivedMessageLinkDescriptionTextStyle,
     required this.receivedMessageLinkTitleTextStyle,
+    required this.repliedMessageImageMargin,
+    required this.repliedMessagePadding,
+    required this.repliedMessageReceivedBoxDecoration,
+    required this.repliedMessageSentBoxDecoration,
     required this.secondaryColor,
     required this.seenIcon,
     required this.sendButtonIcon,
@@ -121,7 +131,16 @@ abstract class ChatTheme {
   /// Used as a background color of a chat widget.
   final Color backgroundColor;
 
-  /// Margin around date dividers.
+  /// Decoration for closable replied message container rendered inside [Input]
+  final Decoration closableRepliedMessageBoxDecoration;
+
+  /// Margin for closable replied message image rendered inside [Input]
+  final EdgeInsets closableRepliedMessageImageMargin;
+
+  /// Padding for closable replied message container rendered inside [Input]
+  final EdgeInsets closableRepliedMessagePadding;
+
+  /// Margin around date dividers
   final EdgeInsets dateDividerMargin;
 
   /// Text style of the date dividers.
@@ -215,7 +234,19 @@ abstract class ChatTheme {
   /// Text style used for displaying link title on received messages.
   final TextStyle receivedMessageLinkTitleTextStyle;
 
-  /// Secondary color, used as a background of received messages.
+  /// Margin for replied message image rendered inside message bubble
+  final EdgeInsets repliedMessageImageMargin;
+
+  /// Padding for replied message container rendered inside message bubble
+  final EdgeInsets repliedMessagePadding;
+
+  /// Decoration for replied message container rendered inside received message bubble
+  final Decoration repliedMessageReceivedBoxDecoration;
+
+  /// Decoration for replied message container rendered inside sent message bubble
+  final Decoration repliedMessageSentBoxDecoration;
+
+  /// Secondary color, used as a background of received messages
   final Color secondaryColor;
 
   /// Icon for message's `seen` status. For the best look use size of 16.
@@ -307,6 +338,16 @@ class DefaultChatTheme extends ChatTheme {
       bottom: 32,
       top: 16,
     ),
+    Decoration closableRepliedMessageBoxDecoration = const BoxDecoration(
+      borderRadius: BorderRadius.all(
+        Radius.circular(8),
+      ),
+      color: neutral2WithOpacity,
+    ),
+    EdgeInsets closableRepliedMessageImageMargin =
+        const EdgeInsets.only(left: 16),
+    EdgeInsets closableRepliedMessagePadding =
+        const EdgeInsets.fromLTRB(16, 12, 16, 12),
     super.dateDividerTextStyle = const TextStyle(
       color: neutral2,
       fontSize: 12,
@@ -384,6 +425,24 @@ class DefaultChatTheme extends ChatTheme {
     super.sentMessageBodyBoldTextStyle,
     super.sentMessageBodyCodeTextStyle,
     super.sentMessageBodyLinkTextStyle,
+    EdgeInsets repliedMessageImageMargin = const EdgeInsets.only(right: 16),
+    EdgeInsets repliedMessagePadding = const EdgeInsets.fromLTRB(16, 0, 16, 0),
+    Decoration repliedMessageReceivedBoxDecoration = const BoxDecoration(
+      border: Border(
+        left: BorderSide(
+          width: 2,
+          color: primary,
+        ),
+      ),
+    ),
+    Decoration repliedMessageSentBoxDecoration = const BoxDecoration(
+      border: Border(
+        left: BorderSide(
+          width: 2,
+          color: neutral7,
+        ),
+      ),
+    ),
     super.sentMessageBodyTextStyle = const TextStyle(
       color: neutral7,
       fontSize: 16,
@@ -459,7 +518,17 @@ class DefaultChatTheme extends ChatTheme {
       fontWeight: FontWeight.w800,
       height: 1.333,
     ),
-  });
+  }) : super(
+          closableRepliedMessageBoxDecoration:
+              closableRepliedMessageBoxDecoration,
+          closableRepliedMessageImageMargin: closableRepliedMessageImageMargin,
+          closableRepliedMessagePadding: closableRepliedMessagePadding,
+          repliedMessageImageMargin: repliedMessageImageMargin,
+          repliedMessagePadding: repliedMessagePadding,
+          repliedMessageReceivedBoxDecoration:
+              repliedMessageReceivedBoxDecoration,
+          repliedMessageSentBoxDecoration: repliedMessageSentBoxDecoration,
+        );
 }
 
 /// Dark chat theme which extends [ChatTheme].
@@ -475,6 +544,16 @@ class DarkChatTheme extends ChatTheme {
     super.dateDividerMargin = const EdgeInsets.only(
       bottom: 32,
       top: 16,
+    ),
+    EdgeInsets closableRepliedMessageImageMargin =
+        const EdgeInsets.only(left: 16),
+    EdgeInsets closableRepliedMessagePadding =
+        const EdgeInsets.fromLTRB(16, 12, 16, 12),
+    Decoration closableRepliedMessageBoxDecoration = const BoxDecoration(
+      borderRadius: BorderRadius.all(
+        Radius.circular(8),
+      ),
+      color: neutral2WithOpacity,
     ),
     super.dateDividerTextStyle = const TextStyle(
       color: neutral7,
@@ -553,6 +632,24 @@ class DarkChatTheme extends ChatTheme {
     super.sentMessageBodyBoldTextStyle,
     super.sentMessageBodyCodeTextStyle,
     super.sentMessageBodyLinkTextStyle,
+    EdgeInsets repliedMessageImageMargin = const EdgeInsets.only(right: 16),
+    EdgeInsets repliedMessagePadding = const EdgeInsets.fromLTRB(16, 0, 16, 0),
+    Decoration repliedMessageReceivedBoxDecoration = const BoxDecoration(
+      border: Border(
+        left: BorderSide(
+          width: 2,
+          color: neutral7,
+        ),
+      ),
+    ),
+    Decoration repliedMessageSentBoxDecoration = const BoxDecoration(
+      border: Border(
+        left: BorderSide(
+          width: 2,
+          color: neutral7,
+        ),
+      ),
+    ),
     super.sentMessageBodyTextStyle = const TextStyle(
       color: neutral7,
       fontSize: 16,
@@ -628,5 +725,15 @@ class DarkChatTheme extends ChatTheme {
       fontWeight: FontWeight.w800,
       height: 1.333,
     ),
-  });
+  }) : super(
+          closableRepliedMessageBoxDecoration:
+              closableRepliedMessageBoxDecoration,
+          closableRepliedMessageImageMargin: closableRepliedMessageImageMargin,
+          closableRepliedMessagePadding: closableRepliedMessagePadding,
+          repliedMessageImageMargin: repliedMessageImageMargin,
+          repliedMessagePadding: repliedMessagePadding,
+          repliedMessageReceivedBoxDecoration:
+              repliedMessageReceivedBoxDecoration,
+          repliedMessageSentBoxDecoration: repliedMessageSentBoxDecoration,
+        );
 }

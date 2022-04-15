@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_ui/src/widgets/inherited_replied_message.dart';
+import 'package:flutter_chat_ui/src/widgets/replied_message.dart';
 
 import '../../models/input_clear_mode.dart';
 import '../../models/send_button_visibility_mode.dart';
@@ -17,11 +19,21 @@ class Input extends StatefulWidget {
   /// Creates [Input] widget.
   const Input({
     super.key,
+    this.customInputReplyMessageBuilder,
     this.isAttachmentUploading,
     this.onAttachmentPressed,
+    required this.onCancelReplyPressed,
     required this.onSendPressed,
     this.options = const InputOptions(),
+     required this.showUserNameForRepliedMessage,
   });
+
+    /// Allows you to replace the default ReplyMessage widget
+  final Widget Function(types.Message)? customInputReplyMessageBuilder;
+
+
+  /// See [RepliedMessage.onCancelReplyPressed]
+  final void Function() onCancelReplyPressed;
 
   /// Whether attachment is uploading. Will replace attachment button with a
   /// [CircularProgressIndicator]. Since we don't have libraries for
@@ -34,10 +46,14 @@ class Input extends StatefulWidget {
 
   /// Will be called on [SendButton] tap. Has [types.PartialText] which can
   /// be transformed to [types.TextMessage] and added to the messages list.
-  final void Function(types.PartialText) onSendPressed;
+  final void Function(types.PartialText, {types.Message? repliedMessage})
+      onSendPressed;
 
   /// Customisation options for the [Input].
   final InputOptions options;
+
+  /// Show user names for replied messages.
+  final bool showUserNameForRepliedMessage;
 
   @override
   State<Input> createState() => _InputState();
@@ -115,12 +131,10 @@ class _InputState extends State<Input> {
   void _handleSendPressed() {
     final trimmedText = _textController.text.trim();
     if (trimmedText != '') {
-      final partialText = types.PartialText(text: trimmedText);
-      widget.onSendPressed(partialText);
-
-      if (widget.options.inputClearMode == InputClearMode.always) {
-        _textController.clear();
-      }
+      final _partialText = types.PartialText(text: trimmedText);
+      widget.onSendPressed(_partialText,
+          repliedMessage: InheritedRepliedMessage.of(context).repliedMessage!,);
+      _textController.clear();
     }
   }
 
@@ -168,68 +182,81 @@ class _InputState extends State<Input> {
             decoration:
                 InheritedChatTheme.of(context).theme.inputContainerDecoration,
             padding: safeAreaInsets,
-            child: Row(
-              textDirection: TextDirection.ltr,
+            child: Column(
               children: [
-                if (widget.onAttachmentPressed != null)
-                  AttachmentButton(
-                    isLoading: widget.isAttachmentUploading ?? false,
-                    onPressed: widget.onAttachmentPressed,
-                    padding: buttonPadding,
-                  ),
-                Expanded(
-                  child: Padding(
-                    padding: textPadding,
-                    child: TextField(
-                      controller: _textController,
-                      cursorColor: InheritedChatTheme.of(context)
-                          .theme
-                          .inputTextCursorColor,
-                      decoration: InheritedChatTheme.of(context)
-                          .theme
-                          .inputTextDecoration
-                          .copyWith(
-                            hintStyle: InheritedChatTheme.of(context)
-                                .theme
-                                .inputTextStyle
-                                .copyWith(
-                                  color: InheritedChatTheme.of(context)
-                                      .theme
-                                      .inputTextColor
-                                      .withOpacity(0.5),
-                                ),
-                            hintText:
-                                InheritedL10n.of(context).l10n.inputPlaceholder,
+                if (InheritedRepliedMessage.of(context).repliedMessage != null)
+                  widget.customInputReplyMessageBuilder != null
+                      ? widget.customInputReplyMessageBuilder!(
+                          InheritedRepliedMessage.of(context).repliedMessage!,
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                          child: RepliedMessage(
+                            onCancelReplyPressed: widget.onCancelReplyPressed,
+                            repliedMessage: InheritedRepliedMessage.of(context)
+                                .repliedMessage,
+                            showUserNames: widget.showUserNameForRepliedMessage,
                           ),
-                      focusNode: _inputFocusNode,
-                      keyboardType: TextInputType.multiline,
-                      maxLines: 5,
-                      minLines: 1,
-                      onChanged: widget.options.onTextChanged,
-                      onTap: widget.options.onTextFieldTap,
-                      style: InheritedChatTheme.of(context)
-                          .theme
-                          .inputTextStyle
-                          .copyWith(
-                            color: InheritedChatTheme.of(context)
-                                .theme
-                                .inputTextColor,
-                          ),
-                      textCapitalization: TextCapitalization.sentences,
+                        ),
+                Row(
+                  children: [
+                    if (widget.onAttachmentPressed != null)
+                      AttachmentButton(
+                        isLoading: widget.isAttachmentUploading ?? false,
+                        onPressed: widget.onAttachmentPressed,
+                        padding: buttonPadding,
+                      ),
+                    Expanded(
+                      child: Padding(
+                        padding: textPadding,
+                        child: TextField(
+                          controller: _textController,
+                          cursorColor: InheritedChatTheme.of(context)
+                              .theme
+                              .inputTextCursorColor,
+                          decoration: InheritedChatTheme.of(context)
+                              .theme
+                              .inputTextDecoration
+                              .copyWith(
+                                hintStyle: InheritedChatTheme.of(context)
+                                    .theme
+                                    .inputTextStyle
+                                    .copyWith(
+                                      color: InheritedChatTheme.of(context)
+                                          .theme
+                                          .inputTextColor
+                                          .withOpacity(0.5),
+                                    ),
+                                hintText: InheritedL10n.of(context)
+                                    .l10n
+                                    .inputPlaceholder,
+                              ),
+                          focusNode: _inputFocusNode,
+                          keyboardType: TextInputType.multiline,
+                          maxLines: 5,
+                          minLines: 1,
+                          onChanged: widget.options.onTextChanged,
+                          onTap: widget.options.onTextFieldTap,
+                          style: InheritedChatTheme.of(context)
+                              .theme
+                              .inputTextStyle
+                              .copyWith(
+                                color: InheritedChatTheme.of(context)
+                                    .theme
+                                    .inputTextColor,
+                              ),
+                          textCapitalization: TextCapitalization.sentences,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: buttonPadding.bottom + buttonPadding.top + 24,
-                  ),
-                  child: Visibility(
-                    visible: _sendButtonVisible,
-                    child: SendButton(
-                      onPressed: _handleSendPressed,
-                      padding: buttonPadding,
+                    Visibility(
+                      visible: _sendButtonVisible,
+                      child: SendButton(
+                        onPressed: _handleSendPressed,
+                        padding: buttonPadding,
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),

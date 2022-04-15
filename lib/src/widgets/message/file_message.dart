@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_ui/src/widgets/replied_message.dart';
 
 import '../../util.dart';
 import '../state/inherited_chat_theme.dart';
@@ -10,12 +11,20 @@ import '../state/inherited_user.dart';
 class FileMessage extends StatelessWidget {
   /// Creates a file message widget based on a [types.FileMessage].
   const FileMessage({
-    super.key,
+    Key? key,
+    this.customReplyMessageBuilder,
     required this.message,
-  });
+    required this.showUserNameForRepliedMessage,
+  }) : super(key: key);
 
-  /// [types.FileMessage].
+  /// Allows you to replace the default ReplyMessage widget
+  final Widget Function(types.Message)? customReplyMessageBuilder;
+
+  /// [types.FileMessage]
   final types.FileMessage message;
+
+  /// Show user name for replied message.
+  final bool showUserNameForRepliedMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -33,73 +42,86 @@ class FileMessage extends StatelessWidget {
           InheritedChatTheme.of(context).theme.messageInsetsHorizontal,
           InheritedChatTheme.of(context).theme.messageInsetsVertical,
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(21),
-              ),
-              height: 42,
-              width: 42,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  if (message.isLoading ?? false)
-                    Positioned.fill(
-                      child: CircularProgressIndicator(
-                        color: color,
-                        strokeWidth: 2,
-                      ),
+            if (message.repliedMessage != null)
+              customReplyMessageBuilder != null
+                  ? customReplyMessageBuilder!(message.repliedMessage!)
+                  : RepliedMessage(
+                      messageAuthorId: message.author.id,
+                      repliedMessage: message.repliedMessage,
+                      showUserNames: showUserNameForRepliedMessage,
                     ),
-                  InheritedChatTheme.of(context).theme.documentIcon != null
-                      ? InheritedChatTheme.of(context).theme.documentIcon!
-                      : Image.asset(
-                          'assets/icon-document.png',
-                          color: color,
-                          package: 'flutter_chat_ui',
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(21),
+                  ),
+                  height: 42,
+                  width: 42,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      if (message.isLoading ?? false)
+                        Positioned.fill(
+                          child: CircularProgressIndicator(
+                            color: color,
+                            strokeWidth: 2,
+                          ),
                         ),
-                ],
-              ),
-            ),
-            Flexible(
-              child: Container(
-                margin: const EdgeInsetsDirectional.only(
-                  start: 16,
+                      InheritedChatTheme.of(context).theme.documentIcon != null
+                          ? InheritedChatTheme.of(context).theme.documentIcon!
+                          : Image.asset(
+                              'assets/icon-document.png',
+                              color: color,
+                              package: 'flutter_chat_ui',
+                            ),
+                    ],
+                  ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      message.name,
-                      style: user.id == message.author.id
-                          ? InheritedChatTheme.of(context)
-                              .theme
-                              .sentMessageBodyTextStyle
-                          : InheritedChatTheme.of(context)
-                              .theme
-                              .receivedMessageBodyTextStyle,
-                      textWidthBasis: TextWidthBasis.longestLine,
+                Flexible(
+                  child: Container(
+                    margin: const EdgeInsetsDirectional.only(
+                      start: 16,
                     ),
-                    Container(
-                      margin: const EdgeInsets.only(
-                        top: 4,
-                      ),
-                      child: Text(
-                        formatBytes(message.size.truncate()),
-                        style: user.id == message.author.id
-                            ? InheritedChatTheme.of(context)
-                                .theme
-                                .sentMessageCaptionTextStyle
-                            : InheritedChatTheme.of(context)
-                                .theme
-                                .receivedMessageCaptionTextStyle,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          message.name,
+                          style: user.id == message.author.id
+                              ? InheritedChatTheme.of(context)
+                                  .theme
+                                  .sentMessageBodyTextStyle
+                              : InheritedChatTheme.of(context)
+                                  .theme
+                                  .receivedMessageBodyTextStyle,
+                          textWidthBasis: TextWidthBasis.longestLine,
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(
+                            top: 4,
+                          ),
+                          child: Text(
+                            formatBytes(message.size.truncate()),
+                            style: user.id == message.author.id
+                                ? InheritedChatTheme.of(context)
+                                    .theme
+                                    .sentMessageCaptionTextStyle
+                                : InheritedChatTheme.of(context)
+                                    .theme
+                                    .receivedMessageCaptionTextStyle,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ],
         ),
