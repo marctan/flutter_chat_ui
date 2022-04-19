@@ -7,6 +7,8 @@ import 'package:flutter_chat_ui/src/widgets/inherited_replied_message.dart';
 import 'package:intl/intl.dart';
 import 'package:photo_view/photo_view.dart' show PhotoViewComputedScale;
 import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:photo_view/photo_view_gallery.dart';
+import 'package:swipeable_tile/swipeable_tile.dart';
 
 import '../chat_l10n.dart';
 import '../chat_theme.dart';
@@ -84,6 +86,7 @@ class Chat extends StatefulWidget {
     this.onPreviewDataFetched,
     required this.onSendPressed,
     this.scrollController,
+    this.replySwipeDirection = ReplySwipeDirection.endToStart,
     this.scrollPhysics,
     this.scrollToUnreadOptions = const ScrollToUnreadOptions(),
     this.showUserAvatars = false,
@@ -278,6 +281,9 @@ class Chat extends StatefulWidget {
 
   /// See [ChatList.scrollPhysics].
   final ScrollPhysics? scrollPhysics;
+
+  /// See [ReplySwipeDirection]
+  final ReplySwipeDirection replySwipeDirection;
 
   /// Controls if and how the chat should scroll to the newest unread message.
   final ScrollToUnreadOptions scrollToUnreadOptions;
@@ -577,6 +583,10 @@ class ChatState extends State<Chat> {
                 : min(constraints.maxWidth * 0.78, 440).floor();
 
         messageWidget = Message(
+          replySwipeDirection:
+              widget.replySwipeDirection == ReplySwipeDirection.endToStart
+                  ? SwipeDirection.endToStart
+                  : SwipeDirection.startToEnd,
           audioMessageBuilder: widget.audioMessageBuilder,
           avatarBuilder: widget.avatarBuilder,
           bubbleBuilder: widget.bubbleBuilder,
