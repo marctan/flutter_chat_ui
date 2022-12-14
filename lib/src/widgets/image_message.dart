@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_ui/src/widgets/reply_message_widget.dart';
 
 import '../conditional/conditional.dart';
 import '../util.dart';
@@ -74,11 +75,14 @@ class _ImageMessageState extends State<ImageMessage> {
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       child: widget.customReplyMessageBuilder != null
           ? widget.customReplyMessageBuilder!(widget.message.repliedMessage!)
-          : RepliedMessage(
-              messageAuthorId: widget.message.author.id,
-              repliedMessage: widget.message.repliedMessage,
-              showUserNames: widget.showUserNameForRepliedMessage,
+          : ReplyMessageWidget(
+              message: widget.message.repliedMessage,
             ),
+      // : RepliedMessage(
+      //     messageAuthorId: message.author.id,
+      //     repliedMessage: message.repliedMessage,
+      //     showUserNames: showUserNameForRepliedMessage,
+      //   ),
     );
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/src/widgets/replied_message.dart';
+import 'package:flutter_chat_ui/src/widgets/reply_message_widget.dart';
 import 'package:flutter_link_previewer/flutter_link_previewer.dart'
     show LinkPreview, regexEmail, regexLink;
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
@@ -138,10 +139,8 @@ class TextMessage extends StatelessWidget {
         if (message.repliedMessage != null)
           customReplyMessageBuilder != null
               ? customReplyMessageBuilder!(message.repliedMessage!)
-              : RepliedMessage(
-                  messageAuthorId: message.author.id,
-                  repliedMessage: message.repliedMessage,
-                  showUserNames: showUserNameForRepliedMessage,
+              : ReplyMessageWidget(
+                  message: message.repliedMessage,
                 ),
         if (showName)
           nameBuilder?.call(message.author.id) ??

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_chat_ui/src/widgets/inherited_l10n.dart';
 import 'package:flutter_chat_ui/src/widgets/inherited_replied_message.dart';
 import 'package:intl/intl.dart';
@@ -290,6 +291,7 @@ class _ChatState extends State<Chat> {
   int _imageViewIndex = 0;
   bool _isImageViewVisible = false;
   types.Message? _repliedMessage;
+  final focusNode = FocusNode();
 
   @override
   void initState() {
@@ -441,10 +443,9 @@ class _ChatState extends State<Chat> {
         onMessageVisibilityChanged: widget.onMessageVisibilityChanged,
         onPreviewDataFetched: _onPreviewDataFetched,
         previewTapOptions: widget.previewTapOptions,
-        replySwipeDirection:
-            widget.replySwipeDirection == ReplySwipeDirection.endToStart
-                ? SwipeDirection.endToStart
-                : SwipeDirection.startToEnd,
+        replySwipeDirection: message.author.id != widget.user.id
+            ? SwipeDirection.startToEnd
+            : SwipeDirection.endToStart,
         roundBorder: map['nextMessageInGroup'] == true,
         showAvatar: map['nextMessageInGroup'] == false,
         showName: map['showName'] == true,
@@ -482,6 +483,7 @@ class _ChatState extends State<Chat> {
     setState(() {
       _repliedMessage = message?.copyWith();
     });
+    focusNode.requestFocus();
   }
 
   void _onPageChanged(int index) {
@@ -548,20 +550,28 @@ class _ChatState extends State<Chat> {
                                 ),
                               ),
                       ),
-                      widget.customBottomWidget ??
-                          Input(
-                            customInputReplyMessageBuilder:
-                                widget.customInputReplyMessageBuilder,
-                            isAttachmentUploading: widget.isAttachmentUploading,
-                            onAttachmentPressed: widget.onAttachmentPressed,
-                            onCancelReplyPressed: _onCancelReplyPressed,
-                            onSendPressed: _onSendPressed,
-                            onTextChanged: widget.onTextChanged,
-                            onTextFieldTap: widget.onTextFieldTap,
-                            sendButtonVisibilityMode:
-                                widget.sendButtonVisibilityMode,
-                            showUserNameForRepliedMessage: widget.showUserNames,
-                          ),
+                      InputMessage(
+                        focusNode: focusNode,
+                        replyMessage: _repliedMessage,
+                        onCancelReply: _onCancelReplyPressed,
+                        onSendMessage: _onSendPressed,
+                        onAttachmentPressed: widget.onAttachmentPressed,
+                        isAttachmentUploading: widget.isAttachmentUploading,
+                      )
+                      // Input(
+                      //   focusNode: focusNode,
+                      //   customInputReplyMessageBuilder:
+                      //       widget.customInputReplyMessageBuilder,
+                      //   isAttachmentUploading: widget.isAttachmentUploading,
+                      //   onAttachmentPressed: widget.onAttachmentPressed,
+                      //   onCancelReplyPressed: _onCancelReplyPressed,
+                      //   onSendPressed: _onSendPressed,
+                      //   onTextChanged: widget.onTextChanged,
+                      //   onTextFieldTap: widget.onTextFieldTap,
+                      //   sendButtonVisibilityMode:
+                      //       widget.sendButtonVisibilityMode,
+                      //   showUserNameForRepliedMessage: widget.showUserNames,
+                      // ),
                     ],
                   ),
                 ),

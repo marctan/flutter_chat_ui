@@ -26,16 +26,16 @@ const error = Color(0xffff6767);
 const neutral0 = Color(0xff1d1c21);
 
 /// N2
-const neutral2 = Color(0xff9e9cab);
+const neutral2 = Colors.grey;//Color(0xff9e9cab);
 
 /// N7
-const neutral7 = Color(0xffffffff);
+const neutral7 = Colors.black;//Color(0xffffffff);
 
 /// N7 with 12% opacity
 const neutral7With12Opacity = Color(0x1fffffff);
 
 /// N7 with 50% opacity
-const neutral7With50Opacity = Color(0x80ffffff);
+const neutral7With50Opacity = Colors.grey;//Color(0x80ffffff);
 
 /// Primary
 const primary = Color(0xff6f61e8);
@@ -317,7 +317,7 @@ class DefaultChatTheme extends ChatTheme {
   const DefaultChatTheme({
     Widget? attachmentButtonIcon,
     EdgeInsets? attachmentButtonMargin,
-    Color backgroundColor = neutral7,
+    Color backgroundColor = const Color(0xFFECE5DD),
     Decoration closableRepliedMessageBoxDecoration = const BoxDecoration(
       borderRadius: BorderRadius.all(
         Radius.circular(8),

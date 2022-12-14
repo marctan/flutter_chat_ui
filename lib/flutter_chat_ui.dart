@@ -17,3 +17,4 @@ export 'src/widgets/send_button.dart';
 export 'src/widgets/text_message.dart';
 export 'src/widgets/user_avatar.dart';
 export 'src/widgets/user_name.dart';
+export 'src/widgets/input_message.dart';

@@ -34,6 +34,7 @@ class Input extends StatefulWidget {
     this.onTextFieldTap,
     required this.sendButtonVisibilityMode,
     required this.showUserNameForRepliedMessage,
+    this.focusNode,
   }) : super(key: key);
 
   /// Allows you to replace the default ReplyMessage widget
@@ -69,6 +70,8 @@ class Input extends StatefulWidget {
 
   /// Show user names for replied messages.
   final bool showUserNameForRepliedMessage;
+
+  final FocusNode? focusNode;
 
   @override
   _InputState createState() => _InputState();
@@ -130,7 +133,7 @@ class _InputState extends State<Input> {
     if (trimmedText != '') {
       final _partialText = types.PartialText(text: trimmedText);
       widget.onSendPressed(_partialText,
-          repliedMessage: InheritedRepliedMessage.of(context).repliedMessage!);
+          repliedMessage: InheritedRepliedMessage.of(context).repliedMessage);
       _textController.clear();
     }
   }
@@ -228,7 +231,7 @@ class _InputState extends State<Input> {
                                     .l10n
                                     .inputPlaceholder,
                               ),
-                          focusNode: _inputFocusNode,
+                          focusNode: widget.focusNode,
                           keyboardType: TextInputType.multiline,
                           maxLines: 5,
                           minLines: 1,
