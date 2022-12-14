@@ -32,18 +32,20 @@ const neutral0 = Color(0xff1d1c21);
 /// N1.
 const neutral1 = Color(0xff615e6e);
 
-/// N2.
-const neutral2 = Color(0xff9e9cab);
+
+/// N2
+const neutral2 = Colors.grey;//Color(0xff9e9cab);
 
 /// N7
-const neutral7 = Color(0xffffffff);
+const neutral7 = Colors.black;//Color(0xffffffff);
 
 /// N7 with opacity.
 const neutral7WithOpacity = Color(0x80ffffff);
 
 const neutral7With12Opacity = Color(0x1fffffff);
 
-const neutral7With50Opacity = Color(0x80ffffff);
+/// N7 with 50% opacity
+const neutral7With50Opacity = Colors.grey;//Color(0x80ffffff);
 
 /// Primary.
 const primary = Color(0xff6f61e8);
@@ -343,15 +345,15 @@ class DefaultChatTheme extends ChatTheme {
       bottom: 32,
       top: 16,
     ),
-    Decoration closableRepliedMessageBoxDecoration = const BoxDecoration(
+    super.closableRepliedMessageBoxDecoration = const BoxDecoration(
       borderRadius: BorderRadius.all(
         Radius.circular(8),
       ),
       color: neutral7With12Opacity,
     ),
-    EdgeInsets closableRepliedMessageImageMargin =
+    super.closableRepliedMessageImageMargin =
         const EdgeInsets.only(left: 16),
-    EdgeInsets closableRepliedMessagePadding =
+    super.closableRepliedMessagePadding =
         const EdgeInsets.fromLTRB(16, 12, 16, 12),
     super.dateDividerTextStyle = const TextStyle(
       color: neutral2,
@@ -430,9 +432,9 @@ class DefaultChatTheme extends ChatTheme {
     super.sentMessageBodyBoldTextStyle,
     super.sentMessageBodyCodeTextStyle,
     super.sentMessageBodyLinkTextStyle,
-    EdgeInsets repliedMessageImageMargin = const EdgeInsets.only(right: 16),
-    EdgeInsets repliedMessagePadding = const EdgeInsets.fromLTRB(16, 0, 16, 0),
-    Decoration repliedMessageReceivedBoxDecoration = const BoxDecoration(
+    super.repliedMessageImageMargin = const EdgeInsets.only(right: 16),
+    super.repliedMessagePadding = const EdgeInsets.fromLTRB(16, 0, 16, 0),
+    super.repliedMessageReceivedBoxDecoration = const BoxDecoration(
       border: Border(
         left: BorderSide(
           width: 2,
@@ -440,7 +442,7 @@ class DefaultChatTheme extends ChatTheme {
         ),
       ),
     ),
-    Decoration repliedMessageSentBoxDecoration = const BoxDecoration(
+    super.repliedMessageSentBoxDecoration = const BoxDecoration(
       border: Border(
         left: BorderSide(
           width: 2,
@@ -448,7 +450,7 @@ class DefaultChatTheme extends ChatTheme {
         ),
       ),
     ),
-    Widget? replyIcon,
+    super.replyIcon,
     super.sentMessageBodyTextStyle = const TextStyle(
       color: neutral7,
       fontSize: 16,
@@ -524,18 +526,7 @@ class DefaultChatTheme extends ChatTheme {
       fontWeight: FontWeight.w800,
       height: 1.333,
     ),
-  }) : super(
-          closableRepliedMessageBoxDecoration:
-              closableRepliedMessageBoxDecoration,
-          closableRepliedMessageImageMargin: closableRepliedMessageImageMargin,
-          closableRepliedMessagePadding: closableRepliedMessagePadding,
-          repliedMessageImageMargin: repliedMessageImageMargin,
-          repliedMessagePadding: repliedMessagePadding,
-          repliedMessageReceivedBoxDecoration:
-              repliedMessageReceivedBoxDecoration,
-          repliedMessageSentBoxDecoration: repliedMessageSentBoxDecoration,
-          replyIcon: replyIcon,
-        );
+  });
 }
 
 /// Dark chat theme which extends [ChatTheme].
@@ -552,11 +543,11 @@ class DarkChatTheme extends ChatTheme {
       bottom: 32,
       top: 16,
     ),
-    EdgeInsets closableRepliedMessageImageMargin =
+    super.closableRepliedMessageImageMargin =
         const EdgeInsets.only(left: 16),
-    EdgeInsets closableRepliedMessagePadding =
+    super.closableRepliedMessagePadding =
         const EdgeInsets.fromLTRB(16, 12, 16, 12),
-    Decoration closableRepliedMessageBoxDecoration = const BoxDecoration(
+    super.closableRepliedMessageBoxDecoration = const BoxDecoration(
       borderRadius: BorderRadius.all(
         Radius.circular(8),
       ),
@@ -639,9 +630,9 @@ class DarkChatTheme extends ChatTheme {
     super.sentMessageBodyBoldTextStyle,
     super.sentMessageBodyCodeTextStyle,
     super.sentMessageBodyLinkTextStyle,
-    EdgeInsets repliedMessageImageMargin = const EdgeInsets.only(right: 16),
-    EdgeInsets repliedMessagePadding = const EdgeInsets.fromLTRB(16, 0, 16, 0),
-    Decoration repliedMessageReceivedBoxDecoration = const BoxDecoration(
+    super.repliedMessageImageMargin = const EdgeInsets.only(right: 16),
+    super.repliedMessagePadding = const EdgeInsets.fromLTRB(16, 0, 16, 0),
+    super.repliedMessageReceivedBoxDecoration = const BoxDecoration(
       border: Border(
         left: BorderSide(
           width: 2,
@@ -649,7 +640,7 @@ class DarkChatTheme extends ChatTheme {
         ),
       ),
     ),
-    Decoration repliedMessageSentBoxDecoration = const BoxDecoration(
+    super.repliedMessageSentBoxDecoration = const BoxDecoration(
       border: Border(
         left: BorderSide(
           width: 2,
@@ -663,7 +654,7 @@ class DarkChatTheme extends ChatTheme {
       fontWeight: FontWeight.w500,
       height: 1.5,
     ),
-    Widget? replyIcon,
+    super.replyIcon,
     super.sentMessageCaptionTextStyle = const TextStyle(
       color: neutral7With50Opacity,
       fontSize: 12,
@@ -733,16 +724,5 @@ class DarkChatTheme extends ChatTheme {
       fontWeight: FontWeight.w800,
       height: 1.333,
     ),
-  }) : super(
-          closableRepliedMessageBoxDecoration:
-              closableRepliedMessageBoxDecoration,
-          closableRepliedMessageImageMargin: closableRepliedMessageImageMargin,
-          closableRepliedMessagePadding: closableRepliedMessagePadding,
-          repliedMessageImageMargin: repliedMessageImageMargin,
-          repliedMessagePadding: repliedMessagePadding,
-          repliedMessageReceivedBoxDecoration:
-              repliedMessageReceivedBoxDecoration,
-          repliedMessageSentBoxDecoration: repliedMessageSentBoxDecoration,
-          replyIcon: replyIcon,
-        );
+  });
 }

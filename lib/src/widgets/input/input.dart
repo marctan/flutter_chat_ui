@@ -25,12 +25,12 @@ class Input extends StatefulWidget {
     required this.onCancelReplyPressed,
     required this.onSendPressed,
     this.options = const InputOptions(),
-     required this.showUserNameForRepliedMessage,
+    required this.showUserNameForRepliedMessage,
+    this.focusNode,
   });
 
-    /// Allows you to replace the default ReplyMessage widget
+  /// Allows you to replace the default ReplyMessage widget
   final Widget Function(types.Message)? customInputReplyMessageBuilder;
-
 
   /// See [RepliedMessage.onCancelReplyPressed]
   final void Function() onCancelReplyPressed;
@@ -54,6 +54,8 @@ class Input extends StatefulWidget {
 
   /// Show user names for replied messages.
   final bool showUserNameForRepliedMessage;
+
+  final FocusNode? focusNode;
 
   @override
   State<Input> createState() => _InputState();
@@ -132,8 +134,10 @@ class _InputState extends State<Input> {
     final trimmedText = _textController.text.trim();
     if (trimmedText != '') {
       final _partialText = types.PartialText(text: trimmedText);
-      widget.onSendPressed(_partialText,
-          repliedMessage: InheritedRepliedMessage.of(context).repliedMessage!,);
+      widget.onSendPressed(
+        _partialText,
+        repliedMessage: InheritedRepliedMessage.of(context).repliedMessage,
+      );
       _textController.clear();
     }
   }
@@ -231,7 +235,7 @@ class _InputState extends State<Input> {
                                     .l10n
                                     .inputPlaceholder,
                               ),
-                          focusNode: _inputFocusNode,
+                          focusNode: widget.focusNode,
                           keyboardType: TextInputType.multiline,
                           maxLines: 5,
                           minLines: 1,

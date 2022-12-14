@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_ui/src/widgets/input_message.dart';
 import 'package:flutter_chat_ui/src/widgets/state/inherited_l10n.dart';
 import 'package:flutter_chat_ui/src/widgets/inherited_replied_message.dart';
 import 'package:intl/intl.dart';
@@ -354,6 +355,7 @@ class ChatState extends State<Chat> {
   bool _hadScrolledToUnreadOnOpen = false;
   bool _isImageViewVisible = false;
   types.Message? _repliedMessage;
+  final focusNode = FocusNode();
 
   /// Keep track of all the auto scroll indices by their respective message's id to allow animating to them.
   final Map<String, int> _autoScrollIndexById = {};
@@ -479,18 +481,14 @@ class ChatState extends State<Chat> {
                                   ),
                                 ),
                         ),
-                        widget.customBottomWidget ??
-                            Input(
-                              customInputReplyMessageBuilder:
-                                  widget.customInputReplyMessageBuilder,
-                              isAttachmentUploading:
-                                  widget.isAttachmentUploading,
-                              onAttachmentPressed: widget.onAttachmentPressed,
-                              onCancelReplyPressed: _onCancelReplyPressed,
-                              onSendPressed: _onSendPressed,
-                              showUserNameForRepliedMessage:
-                                  widget.showUserNames,
-                            ),
+                        InputMessage(
+                          focusNode: focusNode,
+                          replyMessage: _repliedMessage,
+                          onCancelReply: _onCancelReplyPressed,
+                          onSendMessage: _onSendPressed,
+                          onAttachmentPressed: widget.onAttachmentPressed,
+                          isAttachmentUploading: widget.isAttachmentUploading,
+                        ),
                       ],
                     ),
                   ),
@@ -640,8 +638,10 @@ class ChatState extends State<Chat> {
     }
   }
 
-  void _onSendPressed(types.PartialText message,
-      {types.Message? repliedMessage}) {
+  void _onSendPressed(
+    types.PartialText message, {
+    types.Message? repliedMessage,
+  }) {
     setState(() {
       _repliedMessage = null;
     });
@@ -676,6 +676,7 @@ class ChatState extends State<Chat> {
     setState(() {
       _repliedMessage = message?.copyWith();
     });
+    focusNode.requestFocus();
   }
 
   void _onPreviewDataFetched(

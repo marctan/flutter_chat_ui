@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_chat_ui/src/widgets/replied_message.dart';
+import 'package:flutter_chat_ui/src/widgets/reply_message_widget.dart';
 
 import '../../util.dart';
 import '../state/inherited_chat_theme.dart';
@@ -48,11 +48,14 @@ class FileMessage extends StatelessWidget {
             if (message.repliedMessage != null)
               customReplyMessageBuilder != null
                   ? customReplyMessageBuilder!(message.repliedMessage!)
-                  : RepliedMessage(
-                      messageAuthorId: message.author.id,
-                      repliedMessage: message.repliedMessage,
-                      showUserNames: showUserNameForRepliedMessage,
+                  : ReplyMessageWidget(
+                      message: message.repliedMessage,
                     ),
+            // : RepliedMessage(
+            //     messageAuthorId: message.author.id,
+            //     repliedMessage: message.repliedMessage,
+            //     showUserNames: showUserNameForRepliedMessage,
+            //   ),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [

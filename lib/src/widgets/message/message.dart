@@ -325,10 +325,7 @@ class Message extends StatelessWidget {
                       .value,
                   child: Container(
                     decoration: BoxDecoration(
-                      color: InheritedChatTheme.of(context)
-                          .theme
-                          .receivedMessageDocumentIconColor
-                          .withOpacity(0.2),
+                      color: Color(0xFF1FD189).withOpacity(0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     height: 24,
@@ -338,9 +335,7 @@ class Message extends StatelessWidget {
                             ? InheritedChatTheme.of(context).theme.replyIcon!
                             : Image.asset(
                                 'assets/icon-reply.png',
-                                color: InheritedChatTheme.of(context)
-                                    .theme
-                                    .receivedMessageDocumentIconColor,
+                                color: Color(0xFF1FD189),
                                 package: 'flutter_chat_ui',
                               ),
                   ),
