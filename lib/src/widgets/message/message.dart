@@ -61,6 +61,7 @@ class Message extends StatelessWidget {
     required this.usePreviewData,
     this.userAgent,
     this.videoMessageBuilder,
+    this.enableSwipe = true,
   });
 
   /// Build an audio message inside predefined bubble.
@@ -194,6 +195,8 @@ class Message extends StatelessWidget {
   final Widget Function(types.VideoMessage, {required int messageWidth})?
       videoMessageBuilder;
 
+  final bool enableSwipe;
+
   Widget _statusBuilder(BuildContext context) {
     switch (message.status) {
       case types.Status.delivered:
@@ -284,7 +287,7 @@ class Message extends StatelessWidget {
       isEelevated: false,
       color: InheritedChatTheme.of(context).theme.backgroundColor,
       swipeThreshold: 0.3,
-      direction: replySwipeDirection,
+      direction: enableSwipe ? replySwipeDirection : SwipeDirection.none,
       onSwiped: (_) {
         onMessageReply(context, message);
       },

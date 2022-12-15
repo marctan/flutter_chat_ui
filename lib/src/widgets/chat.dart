@@ -99,6 +99,8 @@ class Chat extends StatefulWidget {
     this.timeFormat,
     this.typingIndicatorOptions = const TypingIndicatorOptions(),
     this.usePreviewData = true,
+    this.enableSwipe = true,
+    this.enableAttachments = true,
     required this.user,
     this.userAgent,
     this.useTopSafeAreaInset,
@@ -339,6 +341,8 @@ class Chat extends StatefulWidget {
   /// See [Message.videoMessageBuilder].
   final Widget Function(types.VideoMessage, {required int messageWidth})?
       videoMessageBuilder;
+  final bool enableSwipe;
+  final bool enableAttachments;
 
   @override
   State<Chat> createState() => ChatState();
@@ -482,6 +486,7 @@ class ChatState extends State<Chat> {
                                 ),
                         ),
                         InputMessage(
+                          enableAttachments: widget.enableAttachments,
                           focusNode: focusNode,
                           replyMessage: _repliedMessage,
                           onCancelReply: _onCancelReplyPressed,
@@ -581,6 +586,7 @@ class ChatState extends State<Chat> {
                 : min(constraints.maxWidth * 0.78, 440).floor();
 
         messageWidget = Message(
+          enableSwipe: widget.enableSwipe,
           replySwipeDirection:
               widget.replySwipeDirection == ReplySwipeDirection.endToStart
                   ? SwipeDirection.endToStart

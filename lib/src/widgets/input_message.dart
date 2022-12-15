@@ -11,6 +11,7 @@ class InputMessage extends StatefulWidget {
   final Function onCancelReply;
   final Function? onAttachmentPressed;
   final bool? isAttachmentUploading;
+  final bool enableAttachments;
 
   const InputMessage({
     required this.focusNode,
@@ -19,6 +20,7 @@ class InputMessage extends StatefulWidget {
     required this.onSendMessage,
     this.onAttachmentPressed,
     this.isAttachmentUploading,
+    this.enableAttachments = true,
     Key? key,
   }) : super(key: key);
 
@@ -46,19 +48,7 @@ class _InputMessageState extends State<InputMessage> {
       padding: const EdgeInsets.all(8),
       child: Row(
         children: <Widget>[
-          widget.isAttachmentUploading ?? false
-              ? const CircularProgressIndicator()
-              : GestureDetector(
-                  onTap: () => widget.onAttachmentPressed?.call(),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Color(0xFF1FD189),
-                    ),
-                    child: const Icon(Icons.add, color: Colors.white),
-                  ),
-                ),
+          if(widget.enableAttachments) ...attachmentButton(),
           const SizedBox(width: 15),
           Expanded(
             child: Column(
@@ -105,6 +95,24 @@ class _InputMessageState extends State<InputMessage> {
         ],
       ),
     );
+  }
+
+  List<Widget> attachmentButton() {
+    return [
+      widget.isAttachmentUploading ?? false
+          ? const CircularProgressIndicator()
+          : GestureDetector(
+              onTap: () => widget.onAttachmentPressed?.call(),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color(0xFF1FD189),
+                ),
+                child: const Icon(Icons.add, color: Colors.white),
+              ),
+            )
+    ];
   }
 
   void _handleSendPressed() {
