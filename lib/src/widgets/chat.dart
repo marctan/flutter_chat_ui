@@ -81,6 +81,8 @@ class Chat extends StatefulWidget {
     this.theme = const DefaultChatTheme(),
     this.timeFormat,
     this.usePreviewData = true,
+    this.enableSwipe = true,
+    this.enableAttachments = true,
     required this.user,
   }) : super(key: key);
 
@@ -280,6 +282,9 @@ class Chat extends StatefulWidget {
   /// See [InheritedUser.user]
   final types.User user;
 
+  final bool enableSwipe;
+  final bool enableAttachments;
+
   @override
   _ChatState createState() => _ChatState();
 }
@@ -415,6 +420,7 @@ class _ChatState extends State<Chat> {
 
       return Message(
         key: ValueKey(message.id),
+        enableSwipe: widget.enableSwipe,
         avatarBuilder: widget.avatarBuilder,
         bubbleBuilder: widget.bubbleBuilder,
         customMessageBuilder: widget.customMessageBuilder,
@@ -551,6 +557,7 @@ class _ChatState extends State<Chat> {
                               ),
                       ),
                       InputMessage(
+                        enableAttachments: widget.enableAttachments,
                         focusNode: focusNode,
                         replyMessage: _repliedMessage,
                         onCancelReply: _onCancelReplyPressed,

@@ -53,6 +53,7 @@ class Message extends StatelessWidget {
     required this.showUserNameForRepliedMessage,
     this.textMessageBuilder,
     required this.usePreviewData,
+    this.enableSwipe = true,
   }) : super(key: key);
 
   /// This is to allow custom user avatar builder
@@ -167,6 +168,8 @@ class Message extends StatelessWidget {
 
   /// See [TextMessage.usePreviewData]
   final bool usePreviewData;
+
+  final bool enableSwipe;
 
   Widget _avatarBuilder() => showAvatar
       ? avatarBuilder?.call(message.author.id) ??
@@ -331,7 +334,7 @@ class Message extends StatelessWidget {
       isEelevated: false,
       color: InheritedChatTheme.of(context).theme.backgroundColor,
       swipeThreshold: 0.3,
-      direction: replySwipeDirection,
+      direction: enableSwipe ? replySwipeDirection : SwipeDirection.none,
       onSwiped: (_) {
         onMessageReply(context, message);
       },
