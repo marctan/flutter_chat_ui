@@ -69,7 +69,7 @@ class ReplyMessageWidget extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  '${message?.author.firstName}',
+                  '${message?.metadata?['userName']}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontWeight: FontWeight.bold),
