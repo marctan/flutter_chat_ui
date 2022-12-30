@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../models/emoji_enlargement_behavior.dart';
 import '../../models/pattern_style.dart';
 import '../../util.dart';
+import '../replied_message.dart';
 import '../state/inherited_chat_theme.dart';
 import '../state/inherited_user.dart';
 import 'user_name.dart';
@@ -17,6 +18,7 @@ class TextMessage extends StatelessWidget {
   /// Creates a text message widget from a [types.TextMessage] class.
   const TextMessage({
     super.key,
+    this.customReplyMessageBuilder,
     required this.emojiEnlargementBehavior,
     required this.hideBackgroundOnEmojiMessages,
     required this.message,
@@ -26,7 +28,11 @@ class TextMessage extends StatelessWidget {
     required this.showName,
     required this.usePreviewData,
     this.userAgent,
+    required this.showUserNameForRepliedMessage,
   });
+  final bool showUserNameForRepliedMessage;
+
+  final Widget Function(types.Message)? customReplyMessageBuilder;
 
   /// See [Message.emojiEnlargementBehavior].
   final EmojiEnlargementBehavior emojiEnlargementBehavior;
@@ -154,6 +160,14 @@ class TextMessage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (message.repliedMessage != null)
+          customReplyMessageBuilder != null
+              ? customReplyMessageBuilder!(message.repliedMessage!)
+              : RepliedMessage(
+                  messageAuthorId: message.author.id,
+                  repliedMessage: message.repliedMessage,
+                  showUserNames: showUserNameForRepliedMessage,
+                ),
         if (showName)
           nameBuilder?.call(message.author.id) ??
               UserName(author: message.author),

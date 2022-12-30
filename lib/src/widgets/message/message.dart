@@ -482,6 +482,7 @@ class Message extends StatelessWidget {
                 showName: showName,
                 usePreviewData: usePreviewData,
                 userAgent: userAgent,
+                showUserNameForRepliedMessage: showUserNameForRepliedMessage,
               );
       case types.MessageType.video:
         final videoMessage = message as types.VideoMessage;

@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_chat_ui/src/widgets/inherited_l10n.dart';
+import 'package:flutter_chat_ui/src/widgets/state/inherited_l10n.dart';
 import 'package:flutter_chat_ui/src/widgets/inherited_replied_message.dart';
 import 'package:intl/intl.dart';
 import 'package:photo_view/photo_view.dart' show PhotoViewComputedScale;
@@ -139,6 +139,7 @@ class Chat extends StatefulWidget {
   /// See [Message.customStatusBuilder].
   final Widget Function(types.Message message, {required BuildContext context})?
       customStatusBuilder;
+
   /// Allows you to replace the default ReplyMessage widget inside Input widget
   final Widget Function(types.Message)? customInputReplyMessageBuilder;
 
@@ -416,77 +417,87 @@ class ChatState extends State<Chat> {
   @override
   Widget build(BuildContext context) => InheritedUser(
         user: widget.user,
-        child: InheritedChatTheme(
-          theme: widget.theme,
-          child: InheritedL10n(
-            l10n: widget.l10n,
-            child: Stack(
-              children: [
-                Container(
-                  color: widget.theme.backgroundColor,
-                  child: Column(
-                    children: [
-                      Flexible(
-                        child: widget.messages.isEmpty
-                            ? SizedBox.expand(
-                                child: _emptyStateBuilder(),
-                              )
-                            : GestureDetector(
-                                onTap: () {
-                                  FocusManager.instance.primaryFocus?.unfocus();
-                                  widget.onBackgroundTap?.call();
-                                },
-                                child: LayoutBuilder(
-                                  builder: (
-                                    BuildContext context,
-                                    BoxConstraints constraints,
-                                  ) =>
-                                      ChatList(
-                                    bottomWidget: widget.listBottomWidget,
-                                    bubbleRtlAlignment:
-                                        widget.bubbleRtlAlignment!,
-                                    isLastPage: widget.isLastPage,
-                                    itemBuilder: (Object item, int? index) =>
-                                        _messageBuilder(
-                                      item,
-                                      constraints,
-                                      index,
+        child: InheritedRepliedMessage(
+          repliedMessage: _repliedMessage,
+          child: InheritedChatTheme(
+            theme: widget.theme,
+            child: InheritedL10n(
+              l10n: widget.l10n,
+              child: Stack(
+                children: [
+                  Container(
+                    color: widget.theme.backgroundColor,
+                    child: Column(
+                      children: [
+                        Flexible(
+                          child: widget.messages.isEmpty
+                              ? SizedBox.expand(
+                                  child: _emptyStateBuilder(),
+                                )
+                              : GestureDetector(
+                                  onTap: () {
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                    widget.onBackgroundTap?.call();
+                                  },
+                                  child: LayoutBuilder(
+                                    builder: (
+                                      BuildContext context,
+                                      BoxConstraints constraints,
+                                    ) =>
+                                        ChatList(
+                                      bottomWidget: widget.listBottomWidget,
+                                      bubbleRtlAlignment:
+                                          widget.bubbleRtlAlignment!,
+                                      isLastPage: widget.isLastPage,
+                                      itemBuilder: (Object item, int? index) =>
+                                          _messageBuilder(
+                                        item,
+                                        constraints,
+                                        index,
+                                      ),
+                                      items: _chatMessages,
+                                      keyboardDismissBehavior:
+                                          widget.keyboardDismissBehavior,
+                                      onEndReached: widget.onEndReached,
+                                      onEndReachedThreshold:
+                                          widget.onEndReachedThreshold,
+                                      scrollController: _scrollController,
+                                      scrollPhysics: widget.scrollPhysics,
+                                      typingIndicatorOptions:
+                                          widget.typingIndicatorOptions,
+                                      useTopSafeAreaInset:
+                                          widget.useTopSafeAreaInset ??
+                                              isMobile,
                                     ),
-                                    items: _chatMessages,
-                                    keyboardDismissBehavior:
-                                        widget.keyboardDismissBehavior,
-                                    onEndReached: widget.onEndReached,
-                                    onEndReachedThreshold:
-                                        widget.onEndReachedThreshold,
-                                    scrollController: _scrollController,
-                                    scrollPhysics: widget.scrollPhysics,
-                                    typingIndicatorOptions:
-                                        widget.typingIndicatorOptions,
-                                    useTopSafeAreaInset:
-                                        widget.useTopSafeAreaInset ?? isMobile,
                                   ),
                                 ),
-                              ),
-                      ),
-                      widget.customBottomWidget ??
-                          Input(
-                            isAttachmentUploading: widget.isAttachmentUploading,
-                            onAttachmentPressed: widget.onAttachmentPressed,
-                            onSendPressed: widget.onSendPressed,
-                            options: widget.inputOptions,
-                          ),
-                    ],
+                        ),
+                        widget.customBottomWidget ??
+                            Input(
+                              customInputReplyMessageBuilder:
+                                  widget.customInputReplyMessageBuilder,
+                              isAttachmentUploading:
+                                  widget.isAttachmentUploading,
+                              onAttachmentPressed: widget.onAttachmentPressed,
+                              onCancelReplyPressed: _onCancelReplyPressed,
+                              onSendPressed: _onSendPressed,
+                              showUserNameForRepliedMessage:
+                                  widget.showUserNames,
+                            ),
+                      ],
+                    ),
                   ),
-                ),
-                if (_isImageViewVisible)
-                  ImageGallery(
-                    imageHeaders: widget.imageHeaders,
-                    images: _gallery,
-                    pageController: _galleryPageController!,
-                    onClosePressed: _onCloseGalleryPressed,
-                    options: widget.imageGalleryOptions,
-                  ),
-              ],
+                  if (_isImageViewVisible)
+                    ImageGallery(
+                      imageHeaders: widget.imageHeaders,
+                      images: _gallery,
+                      pageController: _galleryPageController!,
+                      onClosePressed: _onCloseGalleryPressed,
+                      options: widget.imageGalleryOptions,
+                    ),
+                ],
+              ),
             ),
           ),
         ),
@@ -572,6 +583,7 @@ class ChatState extends State<Chat> {
           bubbleRtlAlignment: widget.bubbleRtlAlignment,
           customMessageBuilder: widget.customMessageBuilder,
           onMessageReply: _onMessageReply,
+          showUserNameForRepliedMessage: widget.showUserNames,
           customStatusBuilder: widget.customStatusBuilder,
           emojiEnlargementBehavior: widget.emojiEnlargementBehavior,
           fileMessageBuilder: widget.fileMessageBuilder,
@@ -618,6 +630,14 @@ class ChatState extends State<Chat> {
     }
   }
 
+  void _onSendPressed(types.PartialText message,
+      {types.Message? repliedMessage}) {
+    setState(() {
+      _repliedMessage = null;
+    });
+    widget.onSendPressed(message, repliedMessage: repliedMessage);
+  }
+
   void _onCancelReplyPressed() {
     setState(() {
       _repliedMessage = null;
@@ -648,12 +668,6 @@ class ChatState extends State<Chat> {
     });
   }
 
-  void _onPageChanged(int index) {
-    setState(() {
-      _imageViewIndex = index;
-    });
-  }
-
   void _onPreviewDataFetched(
     types.TextMessage message,
     types.PreviewData previewData,
@@ -674,80 +688,5 @@ class ChatState extends State<Chat> {
       }
       i++;
     }
-  void _onSendPressed(types.PartialText message,
-      {types.Message? repliedMessage}) {
-    setState(() {
-      _repliedMessage = null;
-    });
-    widget.onSendPressed(message, repliedMessage: repliedMessage);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return InheritedUser(
-      user: widget.user,
-      child: InheritedRepliedMessage(
-        repliedMessage: _repliedMessage,
-        child: InheritedChatTheme(
-          theme: widget.theme,
-          child: InheritedL10n(
-            l10n: widget.l10n,
-            child: Stack(
-              children: [
-                Container(
-                  color: widget.theme.backgroundColor,
-                  child: Column(
-                    children: [
-                      Flexible(
-                        child: widget.messages.isEmpty
-                            ? SizedBox.expand(
-                                child: _emptyStateBuilder(),
-                              )
-                            : GestureDetector(
-                                onTap: () {
-                                  FocusManager.instance.primaryFocus?.unfocus();
-                                  widget.onBackgroundTap?.call();
-                                },
-                                child: LayoutBuilder(
-                                  builder: (BuildContext context,
-                                          BoxConstraints constraints) =>
-                                      ChatList(
-                                    isLastPage: widget.isLastPage,
-                                    itemBuilder: (item, index) =>
-                                        _messageBuilder(item, constraints),
-                                    items: _chatMessages,
-                                    onEndReached: widget.onEndReached,
-                                    onEndReachedThreshold:
-                                        widget.onEndReachedThreshold,
-                                    scrollController: widget.scrollController,
-                                    scrollPhysics: widget.scrollPhysics,
-                                  ),
-                                ),
-                              ),
-                      ),
-                      widget.customBottomWidget ??
-                          Input(
-                            customInputReplyMessageBuilder:
-                                widget.customInputReplyMessageBuilder,
-                            isAttachmentUploading: widget.isAttachmentUploading,
-                            onAttachmentPressed: widget.onAttachmentPressed,
-                            onCancelReplyPressed: _onCancelReplyPressed,
-                            onSendPressed: _onSendPressed,
-                            onTextChanged: widget.onTextChanged,
-                            onTextFieldTap: widget.onTextFieldTap,
-                            sendButtonVisibilityMode:
-                                widget.sendButtonVisibilityMode,
-                            showUserNameForRepliedMessage: widget.showUserNames,
-                          ),
-                    ],
-                  ),
-                ),
-                if (_isImageViewVisible) _imageGalleryBuilder(),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
   }
 }

@@ -32,7 +32,7 @@ class ChatList extends StatefulWidget {
 
   /// Used to set alignment of typing indicator.
   /// See [BubbleRtlAlignment].
-  final BubbleRtlAlignment bubbleRtlAlignment;
+  final BubbleRtlAlignment? bubbleRtlAlignment;
 
   /// Used for pagination (infinite scroll) together with [onEndReached].
   /// When true, indicates that there are no more pages to load and
@@ -168,7 +168,7 @@ class _ChatListState extends State<ChatList>
               sliver: SliverToBoxAdapter(
                 child: widget.typingIndicatorOptions?.customTypingIndicator ??
                     TypingIndicator(
-                      bubbleAlignment: widget.bubbleRtlAlignment,
+                      bubbleAlignment: widget.bubbleRtlAlignment!,
                       options: widget.typingIndicatorOptions!,
                       showIndicator: (widget
                               .typingIndicatorOptions!.typingUsers.isNotEmpty &&
