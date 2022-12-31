@@ -1,8 +1,13 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_ui/src/widgets/audio_button.dart';
+import 'package:flutter_chat_ui/src/widgets/audio_recorder.dart';
 import 'package:flutter_chat_ui/src/widgets/inherited_replied_message.dart';
 import 'package:flutter_chat_ui/src/widgets/replied_message.dart';
+import 'package:flutter_chat_ui/src/widgets/video_button.dart';
+import 'package:flutter_chat_ui/src/widgets/video_recorder.dart';
 
 import '../../models/input_clear_mode.dart';
 import '../../models/send_button_visibility_mode.dart';
@@ -27,6 +32,10 @@ class Input extends StatefulWidget {
     this.options = const InputOptions(),
     required this.showUserNameForRepliedMessage,
     this.focusNode,
+    this.onAudioRecorded,
+    this.onStartAudioRecording,
+    this.onVideoRecorded,
+    this.onStartVideoRecording,
   });
 
   /// Allows you to replace the default ReplyMessage widget
@@ -34,6 +43,33 @@ class Input extends StatefulWidget {
 
   /// See [RepliedMessage.onCancelReplyPressed]
   final void Function() onCancelReplyPressed;
+
+  /// Called right when the user presses the audio recording button
+  /// And returns true if and only if audio recording is possible
+  /// Typically use to check audio recording permissions
+  /// If this function returns false, the audio recording button will be disabled
+  final Future<bool> Function()? onStartAudioRecording;
+
+  /// See [AudioButton.onPressed]
+  final Future<bool> Function({
+    required Duration length,
+    required String filePath,
+    required List<double> waveForm,
+    required String mimeType,
+  })? onAudioRecorded;
+
+  /// Called right when the user presses the video recording button
+  /// And returns true if and only if video recording is possible
+  /// Typically use to check video recording permissions
+  /// If this function returns false, the video recording button will be disabled
+  final Future<bool> Function()? onStartVideoRecording;
+
+  /// See [VideoButton.onPressed]
+  final Future<bool> Function({
+    required Duration length,
+    required String filePath,
+    required String mimeType,
+  })? onVideoRecorded;
 
   /// Whether attachment is uploading. Will replace attachment button with a
   /// [CircularProgressIndicator]. Since we don't have libraries for
@@ -63,6 +99,12 @@ class Input extends StatefulWidget {
 
 /// [Input] widget state.
 class _InputState extends State<Input> {
+  final _audioRecorderKey = GlobalKey<AudioRecorderState>();
+
+  bool _recordingAudio = false;
+  bool _audioUploading = false;
+  bool _videoUploading = false;
+
   late final _inputFocusNode = FocusNode(
     onKeyEvent: (node, event) {
       if (event.physicalKey == PhysicalKeyboardKey.enter &&
@@ -128,6 +170,164 @@ class _InputState extends State<Input> {
     } else {
       _sendButtonVisible = true;
     }
+  }
+
+  Widget _leftWidget(final buttonPadding) {
+    if (widget.isAttachmentUploading == true) {
+      return SizedBox(
+        height: 24,
+        width: 24,
+        child: CircularProgressIndicator(
+          backgroundColor: Colors.transparent,
+          strokeWidth: 2,
+          valueColor: AlwaysStoppedAnimation<Color>(
+            InheritedChatTheme.of(context).theme.inputTextColor,
+          ),
+        ),
+      );
+    } else {
+      return AttachmentButton(
+        onPressed: widget.onAttachmentPressed,
+        isLoading: widget.isAttachmentUploading ?? false,
+        padding: buttonPadding,
+      );
+    }
+  }
+
+  Widget _audioWidget() {
+    if (_audioUploading == true) {
+      return SizedBox(
+        height: 24,
+        width: 24,
+        child: CircularProgressIndicator(
+          backgroundColor: Colors.transparent,
+          strokeWidth: 2,
+          valueColor: AlwaysStoppedAnimation<Color>(
+            InheritedChatTheme.of(context).theme.inputTextColor,
+          ),
+        ),
+      );
+    } else {
+      return AudioButton(
+        onPressed: _toggleAudioRecording,
+        recordingAudio: _recordingAudio,
+      );
+    }
+  }
+
+  Widget _videoWidget() {
+    if (_videoUploading == true) {
+      return SizedBox(
+        height: 24,
+        width: 24,
+        child: CircularProgressIndicator(
+          backgroundColor: Colors.transparent,
+          strokeWidth: 2,
+          valueColor: AlwaysStoppedAnimation<Color>(
+            InheritedChatTheme.of(context).theme.inputTextColor,
+          ),
+        ),
+      );
+    } else {
+      return VideoButton(
+        onPressed: _toggleVideoRecording,
+      );
+    }
+  }
+
+  Future<void> _toggleAudioRecording() async {
+    if (!_recordingAudio) {
+      if (widget.onStartAudioRecording != null &&
+          !(await widget.onStartAudioRecording!())) {
+        return;
+      }
+      setState(() {
+        _recordingAudio = true;
+      });
+    } else {
+      final audioRecording =
+          await _audioRecorderKey.currentState!.stopRecording();
+      if (audioRecording != null) {
+        setState(() {
+          _audioUploading = true;
+        });
+        final success = await widget.onAudioRecorded!(
+          length: audioRecording.duration,
+          filePath: audioRecording.filePath,
+          waveForm: audioRecording.decibelLevels,
+          mimeType: audioRecording.mimeType,
+        );
+        setState(() {
+          _audioUploading = false;
+        });
+        if (success) {
+          setState(() {
+            _recordingAudio = false;
+          });
+        }
+      }
+    }
+  }
+
+  Future<void> _toggleVideoRecording() async {
+    if (widget.onStartVideoRecording != null &&
+        !(await widget.onStartVideoRecording!())) {
+      return;
+    }
+
+    final l10n = InheritedL10n.of(context).l10n;
+    final theme = InheritedChatTheme.of(context).theme;
+    final file = await Navigator.of(context).push<VideoRecording?>(
+      PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            InheritedChatTheme(
+          theme: theme,
+          child: InheritedL10n(
+            l10n: l10n,
+            child: const VideoRecorder(),
+          ),
+        ),
+        transitionDuration: const Duration(milliseconds: 200),
+        reverseTransitionDuration: const Duration(milliseconds: 100),
+        transitionsBuilder: (
+          BuildContext context,
+          Animation<double> animation,
+          Animation<double> secondaryAnimation,
+          Widget child,
+        ) {
+          return SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0.0, 1.0),
+              end: Offset.zero,
+            ).animate(animation),
+            child: FadeTransition(
+              opacity: animation,
+              child: child,
+            ), // child is the value returned by pageBuilder
+          );
+        },
+      ),
+    );
+    if (file != null) {
+      setState(() {
+        _videoUploading = true;
+      });
+      await widget.onVideoRecorded!(
+        length: file.length,
+        filePath: file.filePath,
+        mimeType: file.mimeType,
+      );
+      setState(() {
+        _videoUploading = false;
+      });
+    }
+  }
+
+  void _cancelRecording() async {
+    setState(() {
+      _recordingAudio = false;
+    });
   }
 
   void _handleSendPressed() {
@@ -204,54 +404,58 @@ class _InputState extends State<Input> {
                         ),
                 Row(
                   children: [
-                    if (widget.onAttachmentPressed != null)
-                      AttachmentButton(
-                        isLoading: widget.isAttachmentUploading ?? false,
-                        onPressed: widget.onAttachmentPressed,
-                        padding: buttonPadding,
-                      ),
+                    if (widget.onAttachmentPressed != null && !_recordingAudio)
+                      _leftWidget(buttonPadding),
                     Expanded(
-                      child: Padding(
-                        padding: textPadding,
-                        child: TextField(
-                          controller: _textController,
-                          cursorColor: InheritedChatTheme.of(context)
-                              .theme
-                              .inputTextCursorColor,
-                          decoration: InheritedChatTheme.of(context)
-                              .theme
-                              .inputTextDecoration
-                              .copyWith(
-                                hintStyle: InheritedChatTheme.of(context)
+                      child: _recordingAudio
+                          ? AudioRecorder(
+                              key: _audioRecorderKey,
+                              onCancelRecording: _cancelRecording,
+                              disabled: _audioUploading,
+                            )
+                          : Padding(
+                              padding: textPadding,
+                              child: TextField(
+                                controller: _textController,
+                                cursorColor: InheritedChatTheme.of(context)
+                                    .theme
+                                    .inputTextCursorColor,
+                                decoration: InheritedChatTheme.of(context)
+                                    .theme
+                                    .inputTextDecoration
+                                    .copyWith(
+                                      hintStyle: InheritedChatTheme.of(context)
+                                          .theme
+                                          .inputTextStyle
+                                          .copyWith(
+                                            color:
+                                                InheritedChatTheme.of(context)
+                                                    .theme
+                                                    .inputTextColor
+                                                    .withOpacity(0.5),
+                                          ),
+                                      hintText: InheritedL10n.of(context)
+                                          .l10n
+                                          .inputPlaceholder,
+                                    ),
+                                focusNode: widget.focusNode,
+                                keyboardType: TextInputType.multiline,
+                                maxLines: 5,
+                                minLines: 1,
+                                onChanged: widget.options.onTextChanged,
+                                onTap: widget.options.onTextFieldTap,
+                                style: InheritedChatTheme.of(context)
                                     .theme
                                     .inputTextStyle
                                     .copyWith(
                                       color: InheritedChatTheme.of(context)
                                           .theme
-                                          .inputTextColor
-                                          .withOpacity(0.5),
+                                          .inputTextColor,
                                     ),
-                                hintText: InheritedL10n.of(context)
-                                    .l10n
-                                    .inputPlaceholder,
+                                textCapitalization:
+                                    TextCapitalization.sentences,
                               ),
-                          focusNode: widget.focusNode,
-                          keyboardType: TextInputType.multiline,
-                          maxLines: 5,
-                          minLines: 1,
-                          onChanged: widget.options.onTextChanged,
-                          onTap: widget.options.onTextFieldTap,
-                          style: InheritedChatTheme.of(context)
-                              .theme
-                              .inputTextStyle
-                              .copyWith(
-                                color: InheritedChatTheme.of(context)
-                                    .theme
-                                    .inputTextColor,
-                              ),
-                          textCapitalization: TextCapitalization.sentences,
-                        ),
-                      ),
+                            ),
                     ),
                     Visibility(
                       visible: _sendButtonVisible,
@@ -259,6 +463,18 @@ class _InputState extends State<Input> {
                         onPressed: _handleSendPressed,
                         padding: buttonPadding,
                       ),
+                    ),
+                    Visibility(
+                      visible:
+                          widget.onAudioRecorded != null && !_sendButtonVisible,
+                      child: _audioWidget(),
+                    ),
+                    Visibility(
+                      visible: !kIsWeb &&
+                          widget.onVideoRecorded != null &&
+                          !_sendButtonVisible &&
+                          !_recordingAudio,
+                      child: _videoWidget(),
                     ),
                   ],
                 ),

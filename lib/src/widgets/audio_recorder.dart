@@ -2,14 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'state/inherited_chat_theme.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
-
-import 'inherited_chat_theme.dart';
 
 class AudioRecording {
   const AudioRecording({
@@ -280,12 +279,14 @@ class AudioRecorderState extends State<AudioRecorder> {
                           ),
                         ),
                         textAlign: TextAlign.center,
-                        style:
-                            InheritedChatTheme.of(context).theme.body1.copyWith(
-                                  color: InheritedChatTheme.of(context)
-                                      .theme
-                                      .inputTextColor,
-                                ),
+                        style: InheritedChatTheme.of(context)
+                            .theme
+                            .inputTextStyle
+                            .copyWith(
+                              color: InheritedChatTheme.of(context)
+                                  .theme
+                                  .inputTextColor,
+                            ),
                       ),
                     ),
                   ],

@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_ui/src/widgets/audio_message.dart';
+import 'package:flutter_chat_ui/src/widgets/video_message.dart';
 import 'package:swipeable_tile/swipeable_tile.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -62,7 +64,11 @@ class Message extends StatelessWidget {
     this.userAgent,
     this.videoMessageBuilder,
     this.enableSwipe = true,
+    this.onStartAudioVideoPlayback,
   });
+
+  /// Playback callback
+  final void Function(types.Message)? onStartAudioVideoPlayback;
 
   /// Build an audio message inside predefined bubble.
   final Widget Function(types.AudioMessage, {required int messageWidth})?
@@ -461,9 +467,11 @@ class Message extends StatelessWidget {
     switch (message.type) {
       case types.MessageType.audio:
         final audioMessage = message as types.AudioMessage;
-        return audioMessageBuilder != null
-            ? audioMessageBuilder!(audioMessage, messageWidth: messageWidth)
-            : const SizedBox();
+        return AudioMessage(
+          message: audioMessage,
+          messageWidth: messageWidth,
+          onStartPlayback: onStartAudioVideoPlayback,
+        );
       case types.MessageType.custom:
         final customMessage = message as types.CustomMessage;
         return customMessageBuilder != null
@@ -509,9 +517,11 @@ class Message extends StatelessWidget {
               );
       case types.MessageType.video:
         final videoMessage = message as types.VideoMessage;
-        return videoMessageBuilder != null
-            ? videoMessageBuilder!(videoMessage, messageWidth: messageWidth)
-            : const SizedBox();
+        return VideoMessage(
+          message: videoMessage,
+          messageWidth: messageWidth,
+          onStartPlayback: onStartAudioVideoPlayback,
+        );
       default:
         return const SizedBox();
     }
