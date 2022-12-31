@@ -8,7 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../models/emoji_enlargement_behavior.dart';
 import '../../models/pattern_style.dart';
 import '../../util.dart';
-import '../replied_message.dart';
+import '../reply_message_widget.dart';
 import '../state/inherited_chat_theme.dart';
 import '../state/inherited_user.dart';
 import 'user_name.dart';
@@ -163,10 +163,8 @@ class TextMessage extends StatelessWidget {
         if (message.repliedMessage != null)
           customReplyMessageBuilder != null
               ? customReplyMessageBuilder!(message.repliedMessage!)
-              : RepliedMessage(
-                  messageAuthorId: message.author.id,
-                  repliedMessage: message.repliedMessage,
-                  showUserNames: showUserNameForRepliedMessage,
+              : ReplyMessageWidget(
+                  message: message.repliedMessage,
                 ),
         if (showName)
           nameBuilder?.call(message.author.id) ??
