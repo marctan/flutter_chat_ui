@@ -587,10 +587,9 @@ class ChatState extends State<Chat> {
 
         messageWidget = Message(
           enableSwipe: widget.enableSwipe,
-          replySwipeDirection:
-              widget.replySwipeDirection == ReplySwipeDirection.endToStart
-                  ? SwipeDirection.endToStart
-                  : SwipeDirection.startToEnd,
+          replySwipeDirection: message.author.id != widget.user.id
+              ? SwipeDirection.startToEnd
+              : SwipeDirection.endToStart,
           audioMessageBuilder: widget.audioMessageBuilder,
           avatarBuilder: widget.avatarBuilder,
           bubbleBuilder: widget.bubbleBuilder,

@@ -340,7 +340,7 @@ class DefaultChatTheme extends ChatTheme {
   const DefaultChatTheme({
     super.attachmentButtonIcon,
     super.attachmentButtonMargin,
-    super.backgroundColor = neutral7,
+    super.backgroundColor = const Color(0xFFECE5DD),
     super.dateDividerMargin = const EdgeInsets.only(
       bottom: 32,
       top: 16,
