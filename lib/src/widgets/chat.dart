@@ -105,6 +105,11 @@ class Chat extends StatefulWidget {
     this.userAgent,
     this.useTopSafeAreaInset,
     this.videoMessageBuilder,
+    this.onStartAudioRecording,
+    this.onAudioRecorded,
+    this.onStartVideoRecording,
+    this.onVideoRecorded,
+    this.onStartAudioVideoPlayback,
   });
 
   /// See [Message.audioMessageBuilder].
@@ -220,6 +225,27 @@ class Chat extends StatefulWidget {
 
   /// See [ChatList.keyboardDismissBehavior].
   final ScrollViewKeyboardDismissBehavior keyboardDismissBehavior;
+
+  /// See [Input.onStartAudioRecording]
+  final Future<bool> Function()? onStartAudioRecording;
+
+  /// See [Input.onAudioRecorded]
+  final Future<bool> Function({
+    required Duration length,
+    required String filePath,
+    required List<double> waveForm,
+    required String mimeType,
+  })? onAudioRecorded;
+
+  /// See [Input.onStartVideoRecording]
+  final Future<bool> Function()? onStartVideoRecording;
+
+  /// See [Input.onVideoRecorded]
+  final Future<bool> Function({
+    required Duration length,
+    required String filePath,
+    required String mimeType,
+  })? onVideoRecorded;
 
   /// Localized copy. Extend [ChatL10n] class to create your own copy or use
   /// existing one, like the default [ChatL10nEn]. You can customize only
@@ -343,6 +369,7 @@ class Chat extends StatefulWidget {
       videoMessageBuilder;
   final bool enableSwipe;
   final bool enableAttachments;
+  final void Function(types.Message)? onStartAudioVideoPlayback;
 
   @override
   State<Chat> createState() => ChatState();
@@ -493,6 +520,10 @@ class ChatState extends State<Chat> {
                           onSendMessage: _onSendPressed,
                           onAttachmentPressed: widget.onAttachmentPressed,
                           isAttachmentUploading: widget.isAttachmentUploading,
+                          onStartAudioRecording: widget.onStartAudioRecording,
+                          onAudioRecorded: widget.onAudioRecorded,
+                          onStartVideoRecording: widget.onStartVideoRecording,
+                          onVideoRecorded: widget.onVideoRecorded,
                         ),
                       ],
                     ),
@@ -581,13 +612,14 @@ class ChatState extends State<Chat> {
             SystemMessage(message: message.text);
       } else {
         final messageWidth =
-            widget.showUserAvatars && message.author.id != widget.user.id
+            widget.showUserAvatars && message.authorId != widget.user.id
                 ? min(constraints.maxWidth * 0.72, 440).floor()
                 : min(constraints.maxWidth * 0.78, 440).floor();
 
         messageWidget = Message(
+          onStartAudioVideoPlayback: widget.onStartAudioVideoPlayback,
           enableSwipe: widget.enableSwipe,
-          replySwipeDirection: message.author.id != widget.user.id
+          replySwipeDirection: message.authorId != widget.user.id
               ? SwipeDirection.startToEnd
               : SwipeDirection.endToStart,
           audioMessageBuilder: widget.audioMessageBuilder,

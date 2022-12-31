@@ -1,14 +1,29 @@
 [
   {
     "author": {
-      "firstName": "John",
-      "id": "4c2307ba-3d40-442f-b1ff-b271f63904ca",
-      "lastName": "Doe"
+      "firstName": "Janice",
+      "id": "b4878b96-efbc-479a-8291-474ef323dec7",
+      "lastName": "King"
     },
-    "createdAt": 1655648404000,
-    "id": "c67ed376-52bf-4d4e-ba2a-7a0f8467b22a",
+    "imageUrl": "https://i.pravatar.cc/300?u=e52552f4-835d-4dbe-ba77-b076e659774d",
+    "length": 4036,
+    "id": "8fa70836-3309-4d09-a777-4d960541f125",
+    "mimeType": "video/mp4",
     "status": "seen",
-    "text": "Ooowww ☺️",
+    "timestamp": 1598438784,
+    "type": "video",
+    "uri": "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4"
+  },
+  {
+    "author": {
+      "firstName": "Janice",
+      "id": "b4878b96-efbc-479a-8291-474ef323dec7",
+      "lastName": "King"
+    },
+    "id": "e7a673e9-86eb-4572-936f-2882b0183cdc",
+    "status": "seen",
+    "text": "https://dev.to/demchenkoalex/making-a-right-keyboard-accessory-view-in-react-native-4n3p",
+    "timestamp": 1598438797,
     "type": "text"
   },
   {

@@ -44,6 +44,7 @@ dependencies:
   mime: ^1.0.2
   open_filex: ^4.2.2
   path_provider: ^2.0.11
+  permission_handler: ^10.2.0
   uuid: ^3.0.6
 
 dev_dependencies:
@@ -56,6 +57,18 @@ dev_dependencies:
   flutter_lints: ^2.0.1
   flutter_test:
     sdk: flutter
+
+#TODO disable overrides before pull request
+dependency_overrides:
+  flutter_chat_types:
+    git:
+      url: https://github.com/sarbogast/flutter_chat_types
+      ref: development
+  flutter_chat_ui:
+    # path: ../
+    git:
+      url: https://github.com/sarbogast/flutter_chat_ui
+      ref: development
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

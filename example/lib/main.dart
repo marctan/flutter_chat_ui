@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -12,7 +13,9 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:mime/mime.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:uuid/uuid.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   initializeDateFormatting().then((_) => runApp(const MyApp()));
@@ -36,19 +39,44 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   List<types.Message> _messages = [];
-  final _user = const types.User(
-    id: '82091008-a484-4a89-ae75-a22bf8d6f3ac',
-  );
+  final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
+  bool _microphoneAllowed = false;
+  bool _cameraAllowed = false;
 
   @override
   void initState() {
     super.initState();
     _loadMessages();
+    _askForPermissions();
+  }
+
+  Future<void> _askForPermissions() async {
+    if (kIsWeb) {
+      setState(() {
+        _microphoneAllowed = true;
+        _cameraAllowed = false;
+      });
+      return;
+    }
+    if (await Permission.microphone.request().isGranted) {
+      setState(() {
+        _microphoneAllowed = true;
+      });
+    }
+    if (await Permission.camera.request().isGranted) {
+      setState(() {
+        _cameraAllowed = true;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
         body: Chat(
+          onAudioRecorded: _microphoneAllowed ? _handleAudioRecorded : null,
+          onVideoRecorded: _microphoneAllowed && _cameraAllowed
+              ? _handleVideoRecorded
+              : null,
           messages: _messages,
           onAttachmentPressed: _handleAttachmentPressed,
           onMessageTap: _handleMessageTap,
@@ -64,6 +92,72 @@ class _ChatPageState extends State<ChatPage> {
     setState(() {
       _messages.insert(0, message);
     });
+  }
+
+  Future<bool> _handleAudioRecorded({
+    required Duration length,
+    required String filePath,
+    required List<double> waveForm,
+    required String mimeType,
+  }) async {
+    //To simulate an upload that takes some time
+    await Future.delayed(const Duration(seconds: 3));
+
+    final message = types.AudioMessage(
+      length: length,
+      authorId: _user.id,
+      id: const Uuid().v4(),
+      mimeType: mimeType,
+      waveForm: waveForm,
+      timestamp: (DateTime.now().millisecondsSinceEpoch / 1000).floor(),
+      uri: filePath,
+    );
+
+    if (kIsWeb) {
+      final response = await http.get(Uri.parse(filePath));
+      final data = response.bodyBytes;
+      print('audio recording size: ${data.length}');
+    } else {
+      final file = File(filePath);
+      final data = await file.readAsBytes();
+      print('audio recording size: ${data.length}');
+    }
+
+    _addMessage(message);
+
+    return true;
+  }
+
+  Future<bool> _handleVideoRecorded({
+    required Duration length,
+    required String filePath,
+    required String mimeType,
+  }) async {
+    //To simulate an upload that takes some time
+    await Future.delayed(const Duration(seconds: 3));
+
+    final message = types.VideoMessage(
+      length: length,
+      authorId: _user.id,
+      id: const Uuid().v4(),
+      mimeType: mimeType,
+      timestamp: (DateTime.now().millisecondsSinceEpoch / 1000).floor(),
+      uri: filePath,
+    );
+
+    if (kIsWeb) {
+      final response = await http.get(Uri.parse(filePath));
+      final data = response.bodyBytes;
+      print('audio recording size: ${data.length}');
+    } else {
+      final file = File(filePath);
+      final data = await file.readAsBytes();
+      print('audio recording size: ${data.length}');
+    }
+
+    _addMessage(message);
+
+    return true;
   }
 
   void _handleAttachmentPressed() {

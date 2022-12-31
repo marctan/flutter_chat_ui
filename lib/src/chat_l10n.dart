@@ -12,6 +12,17 @@ abstract class ChatL10n {
     required this.inputPlaceholder,
     required this.sendButtonAccessibilityLabel,
     required this.unreadMessagesLabel,
+    required this.audioButtonAccessibilityLabel,
+    required this.today,
+    required this.yesterday,
+    required this.playButtonAccessibilityLabel,
+    required this.pauseButtonAccessibilityLabel,
+    required this.audioTrackAccessibilityLabel,
+    required this.videoButtonAccessibilityLabel,
+    required this.videoPlayerAccessibilityLabel,
+    required this.noCameraAvailableMessage,
+    required this.cancelVideoRecordingButton,
+    required this.videoRecordingSwitchCamera,
   });
 
   /// Accessibility label (hint) for the attachment button.
@@ -23,14 +34,47 @@ abstract class ChatL10n {
   /// Accessibility label (hint) for the tap action on file message.
   final String fileButtonAccessibilityLabel;
 
-  /// Placeholder for the text field.
+  /// Accessibility label (hint) for the tap action on audio message when playing
+  final String pauseButtonAccessibilityLabel;
+
+  /// Accessibility label (hint) for the tap action on audio message when not playing
+  final String playButtonAccessibilityLabel;
+
+  /// Placeholder for the text field
   final String inputPlaceholder;
 
   /// Accessibility label (hint) for the send button.
   final String sendButtonAccessibilityLabel;
 
+  /// Accessibility label (hint) for the audio button
+  final String audioButtonAccessibilityLabel;
+
   /// Label for the unread messages header.
   final String unreadMessagesLabel;
+
+  /// Today string
+  final String today;
+
+  /// Yesterday string
+  final String yesterday;
+
+  /// Accessibility label (hint) for the audio track
+  final String audioTrackAccessibilityLabel;
+
+  /// Accessibility label (hint) for the video player in video message
+  final String videoPlayerAccessibilityLabel;
+
+  /// Accessibility label (hint) for the video button
+  final String videoButtonAccessibilityLabel;
+
+  /// Message that appears in camera recorder when no camera is available
+  final String noCameraAvailableMessage;
+
+  /// Button to cancel recording of a video message
+  final String cancelVideoRecordingButton;
+
+  /// Tooltip/hint for the button to switch between cameras (front/back) in video recording UI
+  final String videoRecordingSwitchCamera;
 }
 
 /// Arabic l10n which extends [ChatL10n].
@@ -46,6 +90,18 @@ class ChatL10nAr extends ChatL10n {
     super.inputPlaceholder = 'الرسالة',
     super.sendButtonAccessibilityLabel = 'إرسال',
     super.unreadMessagesLabel = 'الرسائل غير المقروءة',
+    super.today = 'Сьогодні',
+    super.yesterday = 'Учора',
+    super.audioButtonAccessibilityLabel = 'Записати звукове повідомлення',
+    super.playButtonAccessibilityLabel = 'Відтворіть',
+    super.pauseButtonAccessibilityLabel = 'Призупиніть',
+    super.audioTrackAccessibilityLabel =
+        'Натисніть, щоб відтворити / призупинити, проведіть пальцем, щоб шукати',
+    super.videoButtonAccessibilityLabel = 'Записати відео-повідомлення',
+    super.videoPlayerAccessibilityLabel = 'відтворити / призупинити',
+    super.noCameraAvailableMessage = 'Немає доступної камери',
+    super.cancelVideoRecordingButton = 'Скасувати',
+    super.videoRecordingSwitchCamera = 'Переключити камеру',
   });
 }
 
@@ -62,6 +118,18 @@ class ChatL10nDe extends ChatL10n {
     super.inputPlaceholder = 'Nachricht',
     super.sendButtonAccessibilityLabel = 'Senden',
     super.unreadMessagesLabel = 'Ungelesene Nachrichten',
+    super.today = 'Сьогодні',
+    super.yesterday = 'Учора',
+    super.audioButtonAccessibilityLabel = 'Записати звукове повідомлення',
+    super.playButtonAccessibilityLabel = 'Відтворіть',
+    super.pauseButtonAccessibilityLabel = 'Призупиніть',
+    super.audioTrackAccessibilityLabel =
+        'Натисніть, щоб відтворити / призупинити, проведіть пальцем, щоб шукати',
+    super.videoButtonAccessibilityLabel = 'Записати відео-повідомлення',
+    super.videoPlayerAccessibilityLabel = 'відтворити / призупинити',
+    super.noCameraAvailableMessage = 'Немає доступної камери',
+    super.cancelVideoRecordingButton = 'Скасувати',
+    super.videoRecordingSwitchCamera = 'Переключити камеру',
   });
 }
 
@@ -78,6 +146,17 @@ class ChatL10nEn extends ChatL10n {
     super.inputPlaceholder = 'Message',
     super.sendButtonAccessibilityLabel = 'Send',
     super.unreadMessagesLabel = 'Unread messages',
+    super.today = 'Today',
+    super.yesterday = 'Yesterday',
+    super.audioButtonAccessibilityLabel = 'Record audio message',
+    super.playButtonAccessibilityLabel = 'Play',
+    super.pauseButtonAccessibilityLabel = 'Pause',
+    super.audioTrackAccessibilityLabel = 'Tap to play/pause, slide to seek',
+    super.videoButtonAccessibilityLabel = 'Record video message',
+    super.videoPlayerAccessibilityLabel = 'Play/Pause',
+    super.noCameraAvailableMessage = 'No camera available',
+    super.cancelVideoRecordingButton = 'Cancel',
+    super.videoRecordingSwitchCamera = 'Switch camera',
   });
 }
 
@@ -94,6 +173,18 @@ class ChatL10nEs extends ChatL10n {
     super.inputPlaceholder = 'Mensaje',
     super.sendButtonAccessibilityLabel = 'Enviar',
     super.unreadMessagesLabel = 'Mensajes no leídos',
+    super.today = 'Hoy',
+    super.yesterday = 'Ayer',
+    super.audioButtonAccessibilityLabel = 'Grabar mensaje de audio',
+    super.playButtonAccessibilityLabel = 'Reproducir',
+    super.pauseButtonAccessibilityLabel = 'Pausar',
+    super.audioTrackAccessibilityLabel =
+        'Toca para reproducir/pausar, desliza para buscar',
+    super.videoButtonAccessibilityLabel = 'Grabar mensaje de video',
+    super.videoPlayerAccessibilityLabel = 'Reproducir/Pausar',
+    super.noCameraAvailableMessage = 'No hay cámara disponible',
+    super.cancelVideoRecordingButton = 'Cancelar',
+    super.videoRecordingSwitchCamera = 'Cambiar de cámara',
   });
 }
 
@@ -110,6 +201,18 @@ class ChatL10nKo extends ChatL10n {
     super.inputPlaceholder = '메시지',
     super.sendButtonAccessibilityLabel = '보내기',
     super.unreadMessagesLabel = '읽지 않은 메시지',
+    super.today = 'Сьогодні',
+    super.yesterday = 'Учора',
+    super.audioButtonAccessibilityLabel = 'Записати звукове повідомлення',
+    super.playButtonAccessibilityLabel = 'Відтворіть',
+    super.pauseButtonAccessibilityLabel = 'Призупиніть',
+    super.audioTrackAccessibilityLabel =
+        'Натисніть, щоб відтворити / призупинити, проведіть пальцем, щоб шукати',
+    super.videoButtonAccessibilityLabel = 'Записати відео-повідомлення',
+    super.videoPlayerAccessibilityLabel = 'відтворити / призупинити',
+    super.noCameraAvailableMessage = 'Немає доступної камери',
+    super.cancelVideoRecordingButton = 'Скасувати',
+    super.videoRecordingSwitchCamera = 'Переключити камеру',
   });
 }
 
@@ -126,6 +229,18 @@ class ChatL10nPl extends ChatL10n {
     super.inputPlaceholder = 'Napisz wiadomość',
     super.sendButtonAccessibilityLabel = 'Wyślij',
     super.unreadMessagesLabel = 'Nieprzeczytane wiadomości',
+    super.today = 'Dzisiaj',
+    super.yesterday = 'Wczoraj',
+    super.audioButtonAccessibilityLabel = 'Nagraj wiadomość dźwiękową',
+    super.playButtonAccessibilityLabel = 'Odtwórz',
+    super.pauseButtonAccessibilityLabel = 'Wstrzymać',
+    super.audioTrackAccessibilityLabel =
+        'Dotknij, aby odtworzyć/wstrzymać, przesuń, aby wyszukać',
+    super.videoButtonAccessibilityLabel = 'Nagraj wiadomość wideo',
+    super.videoPlayerAccessibilityLabel = 'Odtwórz/Wstrzymać',
+    super.noCameraAvailableMessage = 'Brak dostępnej kamery',
+    super.cancelVideoRecordingButton = 'Anuluj',
+    super.videoRecordingSwitchCamera = 'Przełącz aparat',
   });
 }
 
@@ -142,6 +257,18 @@ class ChatL10nPt extends ChatL10n {
     super.inputPlaceholder = 'Mensagem',
     super.sendButtonAccessibilityLabel = 'Enviar',
     super.unreadMessagesLabel = 'Mensagens não lidas',
+    super.today = 'Сьогодні',
+    super.yesterday = 'Учора',
+    super.audioButtonAccessibilityLabel = 'Записати звукове повідомлення',
+    super.playButtonAccessibilityLabel = 'Відтворіть',
+    super.pauseButtonAccessibilityLabel = 'Призупиніть',
+    super.audioTrackAccessibilityLabel =
+        'Натисніть, щоб відтворити / призупинити, проведіть пальцем, щоб шукати',
+    super.videoButtonAccessibilityLabel = 'Записати відео-повідомлення',
+    super.videoPlayerAccessibilityLabel = 'відтворити / призупинити',
+    super.noCameraAvailableMessage = 'Немає доступної камери',
+    super.cancelVideoRecordingButton = 'Скасувати',
+    super.videoRecordingSwitchCamera = 'Переключити камеру',
   });
 }
 
@@ -158,6 +285,18 @@ class ChatL10nRu extends ChatL10n {
     super.inputPlaceholder = 'Сообщение',
     super.sendButtonAccessibilityLabel = 'Отправить',
     super.unreadMessagesLabel = 'Непрочитанные сообщения',
+    super.today = 'Сегодня',
+    super.yesterday = 'Вчера',
+    super.audioButtonAccessibilityLabel = 'Записать звуковое сообщение',
+    super.playButtonAccessibilityLabel = 'Воспроизвести',
+    super.pauseButtonAccessibilityLabel = 'Приостановить',
+    super.audioTrackAccessibilityLabel =
+        'Нажмите для воспроизведения / паузы, проведите пальцем для поиска',
+    super.videoButtonAccessibilityLabel = 'Записать видео сообщение',
+    super.videoPlayerAccessibilityLabel = 'Воспроизвести/Приостановить',
+    super.noCameraAvailableMessage = 'Камера недоступна',
+    super.cancelVideoRecordingButton = 'Отмена',
+    super.videoRecordingSwitchCamera = 'Переключить камеру',
   });
 }
 
@@ -174,6 +313,18 @@ class ChatL10nTr extends ChatL10n {
     super.inputPlaceholder = 'Mesaj yazın',
     super.sendButtonAccessibilityLabel = 'Gönder',
     super.unreadMessagesLabel = 'Okunmamış Mesajlar',
+    super.today = 'Сегодня',
+    super.yesterday = 'Вчера',
+    super.audioButtonAccessibilityLabel = 'Записать звуковое сообщение',
+    super.playButtonAccessibilityLabel = 'Воспроизвести',
+    super.pauseButtonAccessibilityLabel = 'Приостановить',
+    super.audioTrackAccessibilityLabel =
+        'Нажмите для воспроизведения / паузы, проведите пальцем для поиска',
+    super.videoButtonAccessibilityLabel = 'Записать видео сообщение',
+    super.videoPlayerAccessibilityLabel = 'Воспроизвести/Приостановить',
+    super.noCameraAvailableMessage = 'Камера недоступна',
+    super.cancelVideoRecordingButton = 'Отмена',
+    super.videoRecordingSwitchCamera = 'Переключить камеру',
   });
 }
 
@@ -190,6 +341,18 @@ class ChatL10nUk extends ChatL10n {
     super.inputPlaceholder = 'Повідомлення',
     super.sendButtonAccessibilityLabel = 'Надіслати',
     super.unreadMessagesLabel = 'Непрочитанi повідомлення',
+    super.today = 'Сьогодні',
+    super.yesterday = 'Учора',
+    super.audioButtonAccessibilityLabel = 'Записати звукове повідомлення',
+    super.playButtonAccessibilityLabel = 'Відтворіть',
+    super.pauseButtonAccessibilityLabel = 'Призупиніть',
+    super.audioTrackAccessibilityLabel =
+        'Натисніть, щоб відтворити / призупинити, проведіть пальцем, щоб шукати',
+    super.videoButtonAccessibilityLabel = 'Записати відео-повідомлення',
+    super.videoPlayerAccessibilityLabel = 'відтворити / призупинити',
+    super.noCameraAvailableMessage = 'Немає доступної камери',
+    super.cancelVideoRecordingButton = 'Скасувати',
+    super.videoRecordingSwitchCamera = 'Переключити камеру',
   });
 }
 
@@ -206,6 +369,18 @@ class ChatL10nZhCN extends ChatL10n {
     super.inputPlaceholder = '输入消息',
     super.sendButtonAccessibilityLabel = '发送',
     super.unreadMessagesLabel = '未读消息',
+    super.today = 'Сьогодні',
+    super.yesterday = 'Учора',
+    super.audioButtonAccessibilityLabel = 'Записати звукове повідомлення',
+    super.playButtonAccessibilityLabel = 'Відтворіть',
+    super.pauseButtonAccessibilityLabel = 'Призупиніть',
+    super.audioTrackAccessibilityLabel =
+        'Натисніть, щоб відтворити / призупинити, проведіть пальцем, щоб шукати',
+    super.videoButtonAccessibilityLabel = 'Записати відео-повідомлення',
+    super.videoPlayerAccessibilityLabel = 'відтворити / призупинити',
+    super.noCameraAvailableMessage = 'Немає доступної камери',
+    super.cancelVideoRecordingButton = 'Скасувати',
+    super.videoRecordingSwitchCamera = 'Переключити камеру',
   });
 }
 
@@ -222,5 +397,17 @@ class ChatL10nZhTW extends ChatL10n {
     super.inputPlaceholder = '輸入訊息',
     super.sendButtonAccessibilityLabel = '傳送',
     super.unreadMessagesLabel = '未讀訊息',
+    super.today = 'Сьогодні',
+    super.yesterday = 'Учора',
+    super.audioButtonAccessibilityLabel = 'Записати звукове повідомлення',
+    super.playButtonAccessibilityLabel = 'Відтворіть',
+    super.pauseButtonAccessibilityLabel = 'Призупиніть',
+    super.audioTrackAccessibilityLabel =
+        'Натисніть, щоб відтворити / призупинити, проведіть пальцем, щоб шукати',
+    super.videoButtonAccessibilityLabel = 'Записати відео-повідомлення',
+    super.videoPlayerAccessibilityLabel = 'відтворити / призупинити',
+    super.noCameraAvailableMessage = 'Немає доступної камери',
+    super.cancelVideoRecordingButton = 'Скасувати',
+    super.videoRecordingSwitchCamera = 'Переключити камеру',
   });
 }

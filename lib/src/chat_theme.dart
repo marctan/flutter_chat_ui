@@ -32,12 +32,11 @@ const neutral0 = Color(0xff1d1c21);
 /// N1.
 const neutral1 = Color(0xff615e6e);
 
-
 /// N2
-const neutral2 = Colors.grey;//Color(0xff9e9cab);
+const neutral2 = Colors.grey; //Color(0xff9e9cab);
 
 /// N7
-const neutral7 = Colors.black;//Color(0xffffffff);
+const neutral7 = Colors.black; //Color(0xffffffff);
 
 /// N7 with opacity.
 const neutral7WithOpacity = Color(0x80ffffff);
@@ -45,7 +44,7 @@ const neutral7WithOpacity = Color(0x80ffffff);
 const neutral7With12Opacity = Color(0x1fffffff);
 
 /// N7 with 50% opacity
-const neutral7With50Opacity = Colors.grey;//Color(0x80ffffff);
+const neutral7With50Opacity = Colors.grey; //Color(0x80ffffff);
 
 /// Primary.
 const primary = Color(0xff6f61e8);
@@ -124,6 +123,15 @@ abstract class ChatTheme {
     required this.userAvatarNameColors,
     required this.userAvatarTextStyle,
     required this.userNameTextStyle,
+    required this.subtitle1,
+    required this.subtitle2,
+    required this.subtitle2Color,
+    required this.audioButtonIcon,
+    required this.recordButtonIcon,
+    required this.pauseButtonIcon,
+    required this.cancelRecordingButtonIcon,
+    required this.recordColor,
+    required this.playButtonIcon,
   });
 
   /// Icon for select attachment button.
@@ -133,6 +141,10 @@ abstract class ChatTheme {
   final EdgeInsets? attachmentButtonMargin;
 
   /// Used as a background color of a chat widget.
+  /// Icon for audio recording button
+  final String? audioButtonIcon;
+
+  /// Used as a background color of a chat widget
   final Color backgroundColor;
 
   /// Decoration for closable replied message container rendered inside [Input]
@@ -329,6 +341,25 @@ abstract class ChatTheme {
 
   /// User names text style. Color will be overwritten with [userAvatarNameColors].
   final TextStyle userNameTextStyle;
+
+  /// Color of the subtitle2, used for date dividers in the chat
+  final Color subtitle2Color;
+
+  /// Icon for record button
+  final String? recordButtonIcon;
+
+  /// Icon for recording cancellation button
+  final String? cancelRecordingButtonIcon;
+
+  /// Icon for pause button
+  final String? pauseButtonIcon;
+
+  /// Color of the recording button, used for the recording button itself
+  /// as well as for the animated decibel gauge
+  final Color recordColor;
+
+  /// Icon for play button
+  final String? playButtonIcon;
 }
 
 /// Default chat theme which extends [ChatTheme].
@@ -351,8 +382,7 @@ class DefaultChatTheme extends ChatTheme {
       ),
       color: neutral7With12Opacity,
     ),
-    super.closableRepliedMessageImageMargin =
-        const EdgeInsets.only(left: 16),
+    super.closableRepliedMessageImageMargin = const EdgeInsets.only(left: 16),
     super.closableRepliedMessagePadding =
         const EdgeInsets.fromLTRB(16, 12, 16, 12),
     super.dateDividerTextStyle = const TextStyle(
@@ -521,6 +551,15 @@ class DefaultChatTheme extends ChatTheme {
       fontWeight: FontWeight.w800,
       height: 1.333,
     ),
+    super.subtitle1,
+    super.subtitle2,
+    super.subtitle2Color = const Color(0xff1d1d21),
+    super.audioButtonIcon,
+    super.recordButtonIcon,
+    super.pauseButtonIcon,
+    super.cancelRecordingButtonIcon,
+    super.recordColor = Colors.red,
+    super.playButtonIcon,
     super.userNameTextStyle = const TextStyle(
       fontSize: 12,
       fontWeight: FontWeight.w800,
@@ -543,8 +582,7 @@ class DarkChatTheme extends ChatTheme {
       bottom: 32,
       top: 16,
     ),
-    super.closableRepliedMessageImageMargin =
-        const EdgeInsets.only(left: 16),
+    super.closableRepliedMessageImageMargin = const EdgeInsets.only(left: 16),
     super.closableRepliedMessagePadding =
         const EdgeInsets.fromLTRB(16, 12, 16, 12),
     super.closableRepliedMessageBoxDecoration = const BoxDecoration(
@@ -719,6 +757,15 @@ class DarkChatTheme extends ChatTheme {
       fontWeight: FontWeight.w800,
       height: 1.333,
     ),
+    super.subtitle1,
+    super.subtitle2,
+    super.subtitle2Color = const Color(0xffffffff),
+    super.audioButtonIcon,
+    super.recordButtonIcon,
+    super.pauseButtonIcon,
+    super.cancelRecordingButtonIcon,
+    super.recordColor = Colors.red,
+    super.playButtonIcon,
     super.userNameTextStyle = const TextStyle(
       fontSize: 12,
       fontWeight: FontWeight.w800,
