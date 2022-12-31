@@ -6,9 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:intl/intl.dart';
 import 'package:video_player/video_player.dart';
-import 'inherited_chat_theme.dart';
-import 'inherited_l10n.dart';
-import 'inherited_user.dart';
+
+import 'state/inherited_chat_theme.dart';
+import 'state/inherited_l10n.dart';
+import 'state/inherited_user.dart';
 
 /// A class that represents video message widget
 class VideoMessage extends StatefulWidget {
@@ -95,12 +96,12 @@ class _VideoMessageState extends State<VideoMessage> {
   @override
   Widget build(BuildContext context) {
     final _user = InheritedUser.of(context).user;
-    final _background = _user.id == widget.message.authorId
+    final _background = _user.id == widget.message.author.id
         ? InheritedChatTheme.of(context).theme.primaryColor
         : InheritedChatTheme.of(context).theme.secondaryColor;
-    final _foreground = _user.id == widget.message.authorId
-        ? InheritedChatTheme.of(context).theme.primaryTextColor
-        : InheritedChatTheme.of(context).theme.secondaryTextColor;
+    final _foreground = _user.id == widget.message.author.id
+        ? Color(0xffffffff)
+        : const Color(0xff1d1d21);
 
     if (_controller.value.isInitialized) {
       return Tooltip(
@@ -111,8 +112,8 @@ class _VideoMessageState extends State<VideoMessage> {
             alignment: Alignment.bottomCenter,
             children: [
               VideoPlayer(_controller),
-              if (widget.message.status != types.Status.read &&
-                  widget.message.authorId != _user.id)
+              if (widget.message.status != types.Status.seen &&
+                  widget.message.author.id != _user.id)
                 BackdropFilter(
                   filter: ImageFilter.blur(
                     sigmaX: 10,
@@ -187,7 +188,7 @@ class _VideoMessageState extends State<VideoMessage> {
                         ),
                         style: InheritedChatTheme.of(context)
                             .theme
-                            .caption
+                            .receivedMessageCaptionTextStyle
                             .copyWith(color: _foreground),
                       ),
                     ),

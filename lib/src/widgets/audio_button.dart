@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'inherited_chat_theme.dart';
-import 'inherited_l10n.dart';
+import 'state/inherited_chat_theme.dart';
+import 'state/inherited_l10n.dart';
 
 class AudioButton extends StatelessWidget {
   /// Creates audio button widget
@@ -31,7 +31,7 @@ class AudioButton extends StatelessWidget {
             : recordingAudio
                 ? (InheritedChatTheme.of(context).theme.sendButtonIcon != null
                     ? Image.asset(
-                        InheritedChatTheme.of(context).theme.sendButtonIcon!,
+                        InheritedChatTheme.of(context).theme.audioButtonIcon!,
                         color:
                             InheritedChatTheme.of(context).theme.inputTextColor,
                       )

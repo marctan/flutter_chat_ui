@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'inherited_chat_theme.dart';
-import 'inherited_l10n.dart';
+import 'state/inherited_chat_theme.dart';
+import 'state/inherited_l10n.dart';
 
 class VideoButton extends StatelessWidget {
   /// Creates audio button widget

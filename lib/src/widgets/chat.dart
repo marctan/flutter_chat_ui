@@ -612,14 +612,14 @@ class ChatState extends State<Chat> {
             SystemMessage(message: message.text);
       } else {
         final messageWidth =
-            widget.showUserAvatars && message.authorId != widget.user.id
+            widget.showUserAvatars && message.author.id != widget.user.id
                 ? min(constraints.maxWidth * 0.72, 440).floor()
                 : min(constraints.maxWidth * 0.78, 440).floor();
 
         messageWidget = Message(
           onStartAudioVideoPlayback: widget.onStartAudioVideoPlayback,
           enableSwipe: widget.enableSwipe,
-          replySwipeDirection: message.authorId != widget.user.id
+          replySwipeDirection: message.author.id != widget.user.id
               ? SwipeDirection.startToEnd
               : SwipeDirection.endToStart,
           audioMessageBuilder: widget.audioMessageBuilder,

@@ -104,12 +104,13 @@ class _ChatPageState extends State<ChatPage> {
     await Future.delayed(const Duration(seconds: 3));
 
     final message = types.AudioMessage(
+      name: 'testAudio',
       length: length,
-      authorId: _user.id,
+      author: _user,
       id: const Uuid().v4(),
       mimeType: mimeType,
       waveForm: waveForm,
-      timestamp: (DateTime.now().millisecondsSinceEpoch / 1000).floor(),
+      createdAt: DateTime.now().millisecondsSinceEpoch,
       uri: filePath,
     );
 
@@ -137,11 +138,12 @@ class _ChatPageState extends State<ChatPage> {
     await Future.delayed(const Duration(seconds: 3));
 
     final message = types.VideoMessage(
+      name: 'testVideo',
       length: length,
-      authorId: _user.id,
+      author: _user,
       id: const Uuid().v4(),
       mimeType: mimeType,
-      timestamp: (DateTime.now().millisecondsSinceEpoch / 1000).floor(),
+      createdAt: DateTime.now().millisecondsSinceEpoch,
       uri: filePath,
     );
 

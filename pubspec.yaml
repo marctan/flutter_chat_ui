@@ -38,13 +38,11 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-#TODO disable overrides before pull request
 dependency_overrides:
   flutter_chat_types:
     #path: ../flutter_chat_types
     git:
-      url: https://github.com/sarbogast/flutter_chat_types
-      ref: development
+      url: https://github.com/marctan/flutter_chat_types.git
 
 flutter:
   assets:

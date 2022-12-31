@@ -123,8 +123,6 @@ abstract class ChatTheme {
     required this.userAvatarNameColors,
     required this.userAvatarTextStyle,
     required this.userNameTextStyle,
-    required this.subtitle1,
-    required this.subtitle2,
     required this.subtitle2Color,
     required this.audioButtonIcon,
     required this.recordButtonIcon,
@@ -132,10 +130,26 @@ abstract class ChatTheme {
     required this.cancelRecordingButtonIcon,
     required this.recordColor,
     required this.playButtonIcon,
+    required this.videoTrackBackgroundColor,
+    required this.videoTrackPlayedColor,
+    required this.videoTrackBufferedColor,
+    required this.videoButtonIcon,
   });
 
   /// Icon for select attachment button.
   final Widget? attachmentButtonIcon;
+
+  /// Background color of track in video messages
+  final Color videoTrackBackgroundColor;
+
+  /// Color of the played part of the track in video messages
+  final Color videoTrackPlayedColor;
+
+  /// Color of the buffered part of the track in video messages
+  final Color videoTrackBufferedColor;
+
+  /// Icon for video recording button
+  final String? videoButtonIcon;
 
   /// Margin of attachment button.
   final EdgeInsets? attachmentButtonMargin;
@@ -369,6 +383,10 @@ class DefaultChatTheme extends ChatTheme {
   /// override only a couple of properties, otherwise create a new class
   /// which extends [ChatTheme]
   const DefaultChatTheme({
+    super.videoButtonIcon,
+    super.videoTrackBackgroundColor = const Color.fromRGBO(200, 200, 200, 0.5),
+    super.videoTrackBufferedColor = const Color.fromRGBO(50, 50, 200, 0.2),
+    super.videoTrackPlayedColor = const Color(0xaa6f61e8),
     super.attachmentButtonIcon,
     super.attachmentButtonMargin,
     super.backgroundColor = const Color(0xFFECE5DD),
@@ -551,8 +569,6 @@ class DefaultChatTheme extends ChatTheme {
       fontWeight: FontWeight.w800,
       height: 1.333,
     ),
-    super.subtitle1,
-    super.subtitle2,
     super.subtitle2Color = const Color(0xff1d1d21),
     super.audioButtonIcon,
     super.recordButtonIcon,
@@ -575,6 +591,10 @@ class DarkChatTheme extends ChatTheme {
   /// override only a couple of properties, otherwise create a new class
   /// which extends [ChatTheme]
   const DarkChatTheme({
+    super.videoTrackBackgroundColor = const Color.fromRGBO(200, 200, 200, 0.5),
+    super.videoTrackBufferedColor = const Color.fromRGBO(50, 50, 200, 0.2),
+    super.videoButtonIcon,
+    super.videoTrackPlayedColor = const Color(0xaa6f61e8),
     super.attachmentButtonIcon,
     super.attachmentButtonMargin,
     super.backgroundColor = dark,
@@ -757,8 +777,6 @@ class DarkChatTheme extends ChatTheme {
       fontWeight: FontWeight.w800,
       height: 1.333,
     ),
-    super.subtitle1,
-    super.subtitle2,
     super.subtitle2Color = const Color(0xffffffff),
     super.audioButtonIcon,
     super.recordButtonIcon,

@@ -3,9 +3,10 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/src/widgets/wave_form.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:intl/intl.dart';
-import 'inherited_chat_theme.dart';
-import 'inherited_l10n.dart';
-import 'inherited_user.dart';
+
+import 'state/inherited_chat_theme.dart';
+import 'state/inherited_l10n.dart';
+import 'state/inherited_user.dart';
 
 /// A class that represents audio message widget
 class AudioMessage extends StatefulWidget {
@@ -79,12 +80,13 @@ class _AudioMessageState extends State<AudioMessage> {
         const Duration(milliseconds: 10),
       );
       await _audioPlayer.startPlayer(
-          fromURI: widget.message.uri,
-          whenFinished: () {
-            setState(() {
-              _playing = false;
-            });
+        fromURI: widget.message.uri,
+        whenFinished: () {
+          setState(() {
+            _playing = false;
           });
+        },
+      );
       setState(() {
         _playing = true;
       });
@@ -98,8 +100,8 @@ class _AudioMessageState extends State<AudioMessage> {
   @override
   Widget build(BuildContext context) {
     final _user = InheritedUser.of(context).user;
-    final _color = _user.id == widget.message.authorId
-        ? InheritedChatTheme.of(context).theme.primaryTextColor
+    final _color = _user.id == widget.message.author.id
+        ? Color(0xffffffff)
         : InheritedChatTheme.of(context).theme.primaryColor;
 
     return Container(
@@ -174,13 +176,9 @@ class _AudioMessageState extends State<AudioMessage> {
                                       }
                                     : null,
                                 waveForm: widget.message.waveForm,
-                                color: _user.id == widget.message.authorId
-                                    ? InheritedChatTheme.of(context)
-                                        .theme
-                                        .primaryTextColor
-                                    : InheritedChatTheme.of(context)
-                                        .theme
-                                        .secondaryTextColor,
+                                color: _user.id == widget.message.author.id
+                                    ? Color(0xffffffff)
+                                    : Color(0xff1d1d21),
                                 duration: snapshot.hasData
                                     ? snapshot.data!.duration
                                     : widget.message.length,
@@ -195,13 +193,9 @@ class _AudioMessageState extends State<AudioMessage> {
                                 .audioTrackAccessibilityLabel,
                             onTap: _togglePlaying,
                             waveForm: widget.message.waveForm,
-                            color: _user.id == widget.message.authorId
-                                ? InheritedChatTheme.of(context)
-                                    .theme
-                                    .primaryTextColor
-                                : InheritedChatTheme.of(context)
-                                    .theme
-                                    .secondaryTextColor,
+                            color: _user.id == widget.message.author.id
+                                ? Color(0xffffffff)
+                                : Color(0xff1d1d21),
                             duration: widget.message.length,
                             position: const Duration(),
                           ),
@@ -224,15 +218,11 @@ class _AudioMessageState extends State<AudioMessage> {
                             ),
                             style: InheritedChatTheme.of(context)
                                 .theme
-                                .caption
+                                .receivedMessageCaptionTextStyle
                                 .copyWith(
-                                  color: _user.id == widget.message.authorId
-                                      ? InheritedChatTheme.of(context)
-                                          .theme
-                                          .primaryTextColor
-                                      : InheritedChatTheme.of(context)
-                                          .theme
-                                          .secondaryTextColor,
+                                  color: _user.id == widget.message.author.id
+                                      ? Color(0xffffffff)
+                                      : Color(0xff1d1d21),
                                 ),
                             textWidthBasis: TextWidthBasis.longestLine,
                           );
@@ -244,16 +234,14 @@ class _AudioMessageState extends State<AudioMessage> {
                           widget.message.length.inMilliseconds,
                         ),
                       ),
-                      style:
-                          InheritedChatTheme.of(context).theme.caption.copyWith(
-                                color: _user.id == widget.message.authorId
-                                    ? InheritedChatTheme.of(context)
-                                        .theme
-                                        .primaryTextColor
-                                    : InheritedChatTheme.of(context)
-                                        .theme
-                                        .secondaryTextColor,
-                              ),
+                      style: InheritedChatTheme.of(context)
+                          .theme
+                          .receivedMessageCaptionTextStyle
+                          .copyWith(
+                            color: _user.id == widget.message.author.id
+                                ? Color(0xffffffff)
+                                : Color(0xff1d1d21),
+                          ),
                       textWidthBasis: TextWidthBasis.longestLine,
                     ),
                 ],

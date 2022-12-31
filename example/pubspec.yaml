@@ -61,14 +61,9 @@ dev_dependencies:
 #TODO disable overrides before pull request
 dependency_overrides:
   flutter_chat_types:
+    #path: ../flutter_chat_types
     git:
-      url: https://github.com/sarbogast/flutter_chat_types
-      ref: development
-  flutter_chat_ui:
-    # path: ../
-    git:
-      url: https://github.com/sarbogast/flutter_chat_ui
-      ref: development
+      url: https://github.com/marctan/flutter_chat_types.git
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

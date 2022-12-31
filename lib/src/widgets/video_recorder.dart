@@ -3,9 +3,11 @@ import 'dart:ui';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_ui/src/widgets/inherited_chat_theme.dart';
-import 'package:flutter_chat_ui/src/widgets/inherited_l10n.dart';
+
 import 'package:flutter_chat_ui/src/widgets/recording_indicator.dart';
+
+import 'state/inherited_chat_theme.dart';
+import 'state/inherited_l10n.dart';
 
 class VideoRecording {
   const VideoRecording({
@@ -282,16 +284,14 @@ class _VideoRecorderState extends State<VideoRecorder>
                               ? Image.asset(
                                   InheritedChatTheme.of(context)
                                       .theme
-                                      .sendButtonIcon!,
+                                      .audioButtonIcon!,
                                   color: InheritedChatTheme.of(context)
                                       .theme
                                       .inputTextColor,
                                 )
                               : Image.asset(
                                   'assets/icon-send.png',
-                                  color: InheritedChatTheme.of(context)
-                                      .theme
-                                      .inputTextColor,
+                                  color: Colors.white,
                                   package: 'flutter_chat_ui',
                                 ),
                           onPressed: _controller != null &&
