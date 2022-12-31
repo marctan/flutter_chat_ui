@@ -2,13 +2,11 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_chat_ui/src/widgets/input_message.dart';
-import 'package:flutter_chat_ui/src/widgets/state/inherited_l10n.dart';
 import 'package:flutter_chat_ui/src/widgets/inherited_replied_message.dart';
+import 'package:flutter_chat_ui/src/widgets/input_message.dart';
 import 'package:intl/intl.dart';
 import 'package:photo_view/photo_view.dart' show PhotoViewComputedScale;
 import 'package:scroll_to_index/scroll_to_index.dart';
-import 'package:photo_view/photo_view_gallery.dart';
 import 'package:swipeable_tile/swipeable_tile.dart';
 
 import '../chat_l10n.dart';
