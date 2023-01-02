@@ -150,93 +150,112 @@ class AudioRecorderState extends State<AudioRecorder> {
             stream: _audioRecorder.onProgress,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                const min = 24.0;
+                const min = 9.0;
                 final disposition = snapshot.data!;
                 _recordingDuration = disposition.duration;
                 _levels.add(disposition.decibels ?? 0.0);
                 return Row(
                   children: [
-                    Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        if (_audioRecorder.isRecording)
-                          AnimatedContainer(
-                            margin: const EdgeInsets.only(right: 16),
-                            duration: const Duration(milliseconds: 50),
-                            width: min + disposition.decibels! * 0.3,
-                            height: min + disposition.decibels! * 0.3,
-                            constraints: const BoxConstraints(
-                              maxHeight: 40.0,
-                              maxWidth: 40.0,
+                    AnimatedContainer(
+                      margin: const EdgeInsets.only(right: 16),
+                      duration: const Duration(milliseconds: 50),
+                      width: min + disposition.decibels! * 0.3,
+                      height: min + disposition.decibels! * 0.3,
+                      constraints: const BoxConstraints(
+                        maxHeight: 25.0,
+                        maxWidth: 25.0,
+                      ),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: InheritedChatTheme.of(context)
+                            .theme
+                            .recordColor
+                            .withOpacity(
+                              widget.disabled ? 0.5 : 1.0,
                             ),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: InheritedChatTheme.of(context)
-                                  .theme
-                                  .recordColor
-                                  .withOpacity(
-                                    widget.disabled ? 0.5 : 1.0,
-                                  ),
-                            ),
-                          ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            width: 24,
-                            height: 24,
-                            margin: const EdgeInsets.only(right: 16),
-                            child: IconButton(
-                              icon: _audioRecorder.isRecording
-                                  ? (InheritedChatTheme.of(context)
-                                              .theme
-                                              .pauseButtonIcon !=
-                                          null
-                                      ? Image.asset(
-                                          InheritedChatTheme.of(context)
-                                              .theme
-                                              .pauseButtonIcon!,
-                                          color: Color(0xFF1FD189).withOpacity(
-                                            widget.disabled ? 0.5 : 1.0,
-                                          ),
-                                        )
-                                      : Icon(
-                                          Icons.pause,
-                                          color: Color(0xFF1FD189).withOpacity(
-                                            widget.disabled ? 0.5 : 1.0,
-                                          ),
-                                        ))
-                                  : (InheritedChatTheme.of(context)
-                                              .theme
-                                              .recordButtonIcon !=
-                                          null
-                                      ? Image.asset(
-                                          InheritedChatTheme.of(context)
-                                              .theme
-                                              .recordButtonIcon!,
-                                          color: InheritedChatTheme.of(context)
-                                              .theme
-                                              .recordColor
-                                              .withOpacity(
-                                                widget.disabled ? 0.5 : 1.0,
-                                              ),
-                                        )
-                                      : Icon(
-                                          Icons.fiber_manual_record,
-                                          color: InheritedChatTheme.of(context)
-                                              .theme
-                                              .recordColor
-                                              .withOpacity(
-                                                widget.disabled ? 0.5 : 1.0,
-                                              ),
-                                        )),
-                              onPressed:
-                                  widget.disabled ? null : _toggleRecording,
-                              padding: EdgeInsets.zero,
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
+                    // Stack(
+                    //   alignment: Alignment.center,
+                    //   children: [
+                    //     if (_audioRecorder.isRecording)
+                    //       AnimatedContainer(
+                    //         margin: const EdgeInsets.only(right: 16),
+                    //         duration: const Duration(milliseconds: 50),
+                    //         width: min + disposition.decibels! * 0.3,
+                    //         height: min + disposition.decibels! * 0.3,
+                    //         constraints: const BoxConstraints(
+                    //           maxHeight: 40.0,
+                    //           maxWidth: 40.0,
+                    //         ),
+                    //         decoration: BoxDecoration(
+                    //           shape: BoxShape.circle,
+                    //           color: InheritedChatTheme.of(context)
+                    //               .theme
+                    //               .recordColor
+                    //               .withOpacity(
+                    //                 widget.disabled ? 0.5 : 1.0,
+                    //               ),
+                    //         ),
+                    //       ),
+                    // Padding(
+                    //   padding: const EdgeInsets.all(8.0),
+                    //   child: Container(
+                    //     width: 24,
+                    //     height: 24,
+                    //     margin: const EdgeInsets.only(right: 16),
+                    //     child: IconButton(
+                    //       icon: _audioRecorder.isRecording
+                    //           ? (InheritedChatTheme.of(context)
+                    //                       .theme
+                    //                       .pauseButtonIcon !=
+                    //                   null
+                    //               ? Image.asset(
+                    //                   InheritedChatTheme.of(context)
+                    //                       .theme
+                    //                       .pauseButtonIcon!,
+                    //                   color: Color(0xFF1FD189).withOpacity(
+                    //                     widget.disabled ? 0.5 : 1.0,
+                    //                   ),
+                    //                 )
+                    //               : Icon(
+                    //                   Icons.pause,
+                    //                   color: Color(0xFF1FD189).withOpacity(
+                    //                     widget.disabled ? 0.5 : 1.0,
+                    //                   ),
+                    //                 ))
+                    //           : (InheritedChatTheme.of(context)
+                    //                       .theme
+                    //                       .recordButtonIcon !=
+                    //                   null
+                    //               ? Image.asset(
+                    //                   InheritedChatTheme.of(context)
+                    //                       .theme
+                    //                       .recordButtonIcon!,
+                    //                   color: InheritedChatTheme.of(context)
+                    //                       .theme
+                    //                       .recordColor
+                    //                       .withOpacity(
+                    //                         widget.disabled ? 0.5 : 1.0,
+                    //                       ),
+                    //                 )
+                    //               : Icon(
+                    //                   Icons.fiber_manual_record,
+                    //                   color: InheritedChatTheme.of(context)
+                    //                       .theme
+                    //                       .recordColor
+                    //                       .withOpacity(
+                    //                         widget.disabled ? 0.5 : 1.0,
+                    //                       ),
+                    //                 )),
+                    //       onPressed:
+                    //           widget.disabled ? null : _toggleRecording,
+                    //       padding: EdgeInsets.zero,
+                    //     ),
+                    //   ),
+                    // ),
+                    //   ],
+                    // ),
                     IconButton(
                       icon: InheritedChatTheme.of(context)
                                   .theme
