@@ -54,9 +54,11 @@ class _AudioMessageState extends State<AudioMessage> {
 
   Future<void> _initAudioPlayer() async {
     await _audioPlayer.openAudioSession();
-    setState(() {
-      _audioPlayerReady = true;
-    });
+    if (mounted) {
+      setState(() {
+        _audioPlayerReady = true;
+      });
+    }
   }
 
   Future<void> _togglePlaying() async {
@@ -100,9 +102,7 @@ class _AudioMessageState extends State<AudioMessage> {
   @override
   Widget build(BuildContext context) {
     final _user = InheritedUser.of(context).user;
-    final _color = _user.id == widget.message.author.id
-        ? Color(0xffffffff)
-        : InheritedChatTheme.of(context).theme.primaryColor;
+    final _color = Color(0xff1d1c21);
 
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 16, 24, 16),
@@ -176,9 +176,7 @@ class _AudioMessageState extends State<AudioMessage> {
                                       }
                                     : null,
                                 waveForm: widget.message.waveForm,
-                                color: _user.id == widget.message.author.id
-                                    ? Color(0xffffffff)
-                                    : Color(0xff1d1d21),
+                                color: Color(0xff1d1c21),
                                 duration: snapshot.hasData
                                     ? snapshot.data!.duration
                                     : widget.message.length,
@@ -193,9 +191,7 @@ class _AudioMessageState extends State<AudioMessage> {
                                 .audioTrackAccessibilityLabel,
                             onTap: _togglePlaying,
                             waveForm: widget.message.waveForm,
-                            color: _user.id == widget.message.author.id
-                                ? Color(0xffffffff)
-                                : Color(0xff1d1d21),
+                            color: Color(0xff1d1c21),
                             duration: widget.message.length,
                             position: const Duration(),
                           ),
@@ -214,15 +210,13 @@ class _AudioMessageState extends State<AudioMessage> {
                                     ? snapshot.data!.duration.inMilliseconds -
                                         snapshot.data!.position.inMilliseconds
                                     : widget.message.length.inMilliseconds,
-                              ),
+                              ).toUtc(),
                             ),
                             style: InheritedChatTheme.of(context)
                                 .theme
                                 .receivedMessageCaptionTextStyle
                                 .copyWith(
-                                  color: _user.id == widget.message.author.id
-                                      ? Color(0xffffffff)
-                                      : Color(0xff1d1d21),
+                                  color: Color(0xff1d1d21),
                                 ),
                             textWidthBasis: TextWidthBasis.longestLine,
                           );
@@ -232,15 +226,13 @@ class _AudioMessageState extends State<AudioMessage> {
                       AudioMessage.durationFormat.format(
                         DateTime.fromMillisecondsSinceEpoch(
                           widget.message.length.inMilliseconds,
-                        ),
+                        ).toUtc(),
                       ),
                       style: InheritedChatTheme.of(context)
                           .theme
                           .receivedMessageCaptionTextStyle
                           .copyWith(
-                            color: _user.id == widget.message.author.id
-                                ? Color(0xffffffff)
-                                : Color(0xff1d1d21),
+                            color: Color(0xff1d1d21),
                           ),
                       textWidthBasis: TextWidthBasis.longestLine,
                     ),

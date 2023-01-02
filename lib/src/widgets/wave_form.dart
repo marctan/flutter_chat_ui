@@ -15,7 +15,7 @@ class WaveForm extends StatefulWidget {
     this.accessibilityLabel,
   }) : super(key: key);
 
-  final List<double>? waveForm;
+  final List<dynamic>? waveForm;
   final Color color;
   final Duration duration;
   final Duration position;
@@ -44,7 +44,7 @@ class _WaveFormState extends State<WaveForm> {
     super.didUpdateWidget(oldWidget);
   }
 
-  List<double> _reduceSamples(List<double> inputs, int maxSamples) {
+  List<double> _reduceSamples(List<dynamic> inputs, int maxSamples) {
     if (inputs.length < maxSamples) {
       return [...inputs];
     } else {

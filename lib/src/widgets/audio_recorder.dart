@@ -195,21 +195,15 @@ class AudioRecorderState extends State<AudioRecorder> {
                                           InheritedChatTheme.of(context)
                                               .theme
                                               .pauseButtonIcon!,
-                                          color: InheritedChatTheme.of(context)
-                                              .theme
-                                              .inputTextColor
-                                              .withOpacity(
-                                                widget.disabled ? 0.5 : 1.0,
-                                              ),
+                                          color: Color(0xFF1FD189).withOpacity(
+                                            widget.disabled ? 0.5 : 1.0,
+                                          ),
                                         )
                                       : Icon(
                                           Icons.pause,
-                                          color: InheritedChatTheme.of(context)
-                                              .theme
-                                              .inputTextColor
-                                              .withOpacity(
-                                                widget.disabled ? 0.5 : 1.0,
-                                              ),
+                                          color: Color(0xFF1FD189).withOpacity(
+                                            widget.disabled ? 0.5 : 1.0,
+                                          ),
                                         ))
                                   : (InheritedChatTheme.of(context)
                                               .theme
@@ -252,21 +246,15 @@ class AudioRecorderState extends State<AudioRecorder> {
                               InheritedChatTheme.of(context)
                                   .theme
                                   .cancelRecordingButtonIcon!,
-                              color: InheritedChatTheme.of(context)
-                                  .theme
-                                  .inputTextColor
-                                  .withOpacity(
-                                    widget.disabled ? 0.5 : 1.0,
-                                  ),
+                              color: Color(0xFF1FD189).withOpacity(
+                                widget.disabled ? 0.5 : 1.0,
+                              ),
                             )
                           : Icon(
                               Icons.delete,
-                              color: InheritedChatTheme.of(context)
-                                  .theme
-                                  .inputTextColor
-                                  .withOpacity(
-                                    widget.disabled ? 0.5 : 1.0,
-                                  ),
+                              color: Color(0xFF1FD189).withOpacity(
+                                widget.disabled ? 0.5 : 1.0,
+                              ),
                             ),
                       onPressed: widget.disabled ? null : _cancelRecording,
                       padding: EdgeInsets.zero,
@@ -283,9 +271,7 @@ class AudioRecorderState extends State<AudioRecorder> {
                             .theme
                             .inputTextStyle
                             .copyWith(
-                              color: InheritedChatTheme.of(context)
-                                  .theme
-                                  .inputTextColor,
+                              color: Color(0xFF1FD189),
                             ),
                       ),
                     ),
