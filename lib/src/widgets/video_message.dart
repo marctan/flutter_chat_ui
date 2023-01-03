@@ -112,17 +112,6 @@ class _VideoMessageState extends State<VideoMessage> {
             alignment: Alignment.bottomCenter,
             children: [
               VideoPlayer(_controller),
-              if (widget.message.status != types.Status.seen &&
-                  widget.message.author.id != _user.id)
-                BackdropFilter(
-                  filter: ImageFilter.blur(
-                    sigmaX: 10,
-                    sigmaY: 10,
-                  ),
-                  child: Container(
-                    color: Colors.black.withOpacity(0),
-                  ),
-                ),
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 50),
                 reverseDuration: const Duration(milliseconds: 200),
