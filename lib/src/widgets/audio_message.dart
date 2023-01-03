@@ -3,6 +3,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/src/widgets/wave_form.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:intl/intl.dart';
+import 'package:logger/logger.dart' show Level, Logger;
 
 import 'state/inherited_chat_theme.dart';
 import 'state/inherited_l10n.dart';
@@ -34,7 +35,7 @@ class AudioMessage extends StatefulWidget {
 }
 
 class _AudioMessageState extends State<AudioMessage> {
-  final _audioPlayer = FlutterSoundPlayer();
+  final _audioPlayer = FlutterSoundPlayer(logLevel: Level.nothing);
 
   bool _playing = false;
   bool _audioPlayerReady = false;
