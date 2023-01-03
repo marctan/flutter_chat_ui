@@ -23,11 +23,11 @@ class VideoButton extends StatelessWidget {
         icon: InheritedChatTheme.of(context).theme.videoButtonIcon != null
             ? Image.asset(
                 InheritedChatTheme.of(context).theme.videoButtonIcon!,
-                color: InheritedChatTheme.of(context).theme.inputTextColor,
+                color: Color(0xFF1FD189),
               )
             : Icon(
                 Icons.videocam_outlined,
-                color: InheritedChatTheme.of(context).theme.inputTextColor,
+                color: Color(0xFF1FD189),
               ),
         padding: EdgeInsets.zero,
         onPressed: onPressed,

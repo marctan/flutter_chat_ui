@@ -184,7 +184,7 @@ class _VideoMessageState extends State<VideoMessage> {
                                 ? (_controller.value.duration.inMilliseconds -
                                     _controller.value.position.inMilliseconds)
                                 : _controller.value.duration.inMilliseconds,
-                          ),
+                          ).toUtc(),
                         ),
                         style: InheritedChatTheme.of(context)
                             .theme
@@ -203,7 +203,13 @@ class _VideoMessageState extends State<VideoMessage> {
         ),
       );
     } else {
-      return Container();
+      return Container(
+        width: 150,
+        height: 150,
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
     }
   }
 }

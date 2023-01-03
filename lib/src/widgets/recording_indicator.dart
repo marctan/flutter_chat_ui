@@ -17,7 +17,7 @@ class RecordingIndicator extends StatefulWidget {
 
 class _RecordingIndicatorState extends State<RecordingIndicator>
     with SingleTickerProviderStateMixin {
-  final _recorderDurationFormat = DateFormat('m:ss,SS', 'en_US');
+  final _recorderDurationFormat = DateFormat('m:ss:SS', 'en_US');
   late AnimationController _animationController;
 
   @override
@@ -41,7 +41,7 @@ class _RecordingIndicatorState extends State<RecordingIndicator>
     String time;
     if (widget.duration != null) {
       time = _recorderDurationFormat.format(
-          DateTime.fromMillisecondsSinceEpoch(widget.duration!.inMilliseconds));
+          DateTime.fromMillisecondsSinceEpoch(widget.duration!.inMilliseconds).toUtc());
       time = time.substring(0, time.length - 1);
     } else {
       time = '';
@@ -67,7 +67,7 @@ class _RecordingIndicatorState extends State<RecordingIndicator>
           Text(
             time,
             style: const TextStyle(
-              color: Colors.white,
+              color: Color(0xFF1FD189),
             ),
           ),
       ],

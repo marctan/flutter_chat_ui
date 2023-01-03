@@ -85,15 +85,15 @@ class _InputMessageState extends State<InputMessage> {
   }
 
   Widget _audioWidget() {
-    if (_audioUploading == true) {
-      return SizedBox(
+    if (_audioUploading) {
+      return const SizedBox(
         height: 24,
         width: 24,
         child: CircularProgressIndicator(
           backgroundColor: Colors.transparent,
           strokeWidth: 2,
           valueColor: AlwaysStoppedAnimation<Color>(
-            InheritedChatTheme.of(context).theme.inputTextColor,
+            Color(0xFF1FD189),
           ),
         ),
       );
@@ -106,15 +106,15 @@ class _InputMessageState extends State<InputMessage> {
   }
 
   Widget _videoWidget() {
-    if (_videoUploading == true) {
-      return SizedBox(
+    if (_videoUploading) {
+      return const SizedBox(
         height: 24,
         width: 24,
         child: CircularProgressIndicator(
           backgroundColor: Colors.transparent,
           strokeWidth: 2,
           valueColor: AlwaysStoppedAnimation<Color>(
-            InheritedChatTheme.of(context).theme.inputTextColor,
+            Color(0xFF1FD189),
           ),
         ),
       );

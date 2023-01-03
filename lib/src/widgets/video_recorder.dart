@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter_chat_ui/src/widgets/recording_indicator.dart';
+import 'recording_indicator.dart';
 
 import 'state/inherited_chat_theme.dart';
 import 'state/inherited_l10n.dart';
@@ -192,7 +192,7 @@ class _VideoRecorderState extends State<VideoRecorder>
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
               child: Container(
-                color: Colors.black26.withOpacity(0.8),
+                color: Colors.grey.shade700.withOpacity(0.8),
               ),
             ),
           ),
@@ -204,12 +204,12 @@ class _VideoRecorderState extends State<VideoRecorder>
                       style: Theme.of(context)
                           .textTheme
                           .bodyText1!
-                          .copyWith(color: Colors.white),
+                          .copyWith(color: Color(0xFF1FD189)),
                     )
                   : (!cameraController.value.isInitialized
                       ? const CircularProgressIndicator(
                           valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
+                              AlwaysStoppedAnimation<Color>(Color(0xFF1FD189)),
                         )
                       : Container()),
             ),
@@ -230,7 +230,7 @@ class _VideoRecorderState extends State<VideoRecorder>
             child: Align(
               alignment: Alignment.bottomCenter,
               child: Container(
-                color: Colors.black,
+                color: Colors.white,
                 width: double.maxFinite,
                 height: 80,
                 child: Stack(
@@ -268,7 +268,7 @@ class _VideoRecorderState extends State<VideoRecorder>
                           InheritedL10n.of(context)
                               .l10n
                               .cancelVideoRecordingButton,
-                          style: const TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Color(0xFF1FD189)),
                         ),
                       ),
                     ),
@@ -285,13 +285,11 @@ class _VideoRecorderState extends State<VideoRecorder>
                                   InheritedChatTheme.of(context)
                                       .theme
                                       .audioButtonIcon!,
-                                  color: InheritedChatTheme.of(context)
-                                      .theme
-                                      .inputTextColor,
+                                  color: Colors.white,
                                 )
                               : Image.asset(
                                   'assets/icon-send.png',
-                                  color: Colors.white,
+                                  color: Color(0xFF1FD189),
                                   package: 'flutter_chat_ui',
                                 ),
                           onPressed: _controller != null &&
