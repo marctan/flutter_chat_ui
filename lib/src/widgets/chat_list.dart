@@ -158,6 +158,7 @@ class _ChatListState extends State<ChatList>
       Scaffold(
         backgroundColor: InheritedChatTheme.of(context).theme.backgroundColor,
         body: CustomScrollView(
+          cacheExtent: 9999,
           controller: widget.scrollController,
           keyboardDismissBehavior: widget.keyboardDismissBehavior,
           physics: widget.scrollPhysics,

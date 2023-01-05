@@ -477,36 +477,25 @@ class ChatState extends State<Chat> {
                                         ?.unfocus();
                                     widget.onBackgroundTap?.call();
                                   },
-                                  child: LayoutBuilder(
-                                    builder: (
-                                      BuildContext context,
-                                      BoxConstraints constraints,
-                                    ) =>
-                                        ChatList(
-                                      bottomWidget: widget.listBottomWidget,
-                                      bubbleRtlAlignment:
-                                          widget.bubbleRtlAlignment!,
-                                      isLastPage: widget.isLastPage,
-                                      itemBuilder: (Object item, int? index) =>
-                                          _messageBuilder(
-                                        item,
-                                        constraints,
-                                        index,
-                                      ),
-                                      items: _chatMessages,
-                                      keyboardDismissBehavior:
-                                          widget.keyboardDismissBehavior,
-                                      onEndReached: widget.onEndReached,
-                                      onEndReachedThreshold:
-                                          widget.onEndReachedThreshold,
-                                      scrollController: _scrollController,
-                                      scrollPhysics: widget.scrollPhysics,
-                                      typingIndicatorOptions:
-                                          widget.typingIndicatorOptions,
-                                      useTopSafeAreaInset:
-                                          widget.useTopSafeAreaInset ??
-                                              isMobile,
-                                    ),
+                                  child: ChatList(
+                                    bottomWidget: widget.listBottomWidget,
+                                    bubbleRtlAlignment:
+                                        widget.bubbleRtlAlignment!,
+                                    isLastPage: widget.isLastPage,
+                                    itemBuilder: (Object item, int? index) =>
+                                        _messageBuilder(item, index),
+                                    items: _chatMessages,
+                                    keyboardDismissBehavior:
+                                        widget.keyboardDismissBehavior,
+                                    onEndReached: widget.onEndReached,
+                                    onEndReachedThreshold:
+                                        widget.onEndReachedThreshold,
+                                    scrollController: _scrollController,
+                                    scrollPhysics: widget.scrollPhysics,
+                                    typingIndicatorOptions:
+                                        widget.typingIndicatorOptions,
+                                    useTopSafeAreaInset:
+                                        widget.useTopSafeAreaInset ?? isMobile,
                                   ),
                                 ),
                         ),
@@ -573,7 +562,6 @@ class ChatState extends State<Chat> {
   /// We need the index for auto scrolling because it will scroll until it reaches an index higher or equal that what it is scrolling towards. Index will be null for removed messages. Can just set to -1 for auto scroll.
   Widget _messageBuilder(
     Object object,
-    BoxConstraints constraints,
     int? index,
   ) {
     if (object is DateHeader) {
@@ -609,10 +597,11 @@ class ChatState extends State<Chat> {
         messageWidget = widget.systemMessageBuilder?.call(message) ??
             SystemMessage(message: message.text);
       } else {
+        final size = MediaQuery.of(context).size.width;
         final messageWidth =
             widget.showUserAvatars && message.author.id != widget.user.id
-                ? min(constraints.maxWidth * 0.72, 440).floor()
-                : min(constraints.maxWidth * 0.78, 440).floor();
+                ? min(size * 0.72, 440).floor()
+                : min(size * 0.78, 440).floor();
 
         messageWidget = Message(
           onStartAudioVideoPlayback: widget.onStartAudioVideoPlayback,
