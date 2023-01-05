@@ -114,48 +114,50 @@ class _ChatListState extends State<ChatList>
 
   @override
   Widget build(BuildContext context) =>
-      NotificationListener<ScrollNotification>(
-        onNotification: (notification) {
-          if (notification.metrics.pixels > 10.0 && !_indicatorOnScrollStatus) {
-            setState(() {
-              _indicatorOnScrollStatus = !_indicatorOnScrollStatus;
-            });
-          } else if (notification.metrics.pixels == 0.0 &&
-              _indicatorOnScrollStatus) {
-            setState(() {
-              _indicatorOnScrollStatus = !_indicatorOnScrollStatus;
-            });
-          }
+      // NotificationListener<ScrollNotification>(
+      //   onNotification: (notification) {
+      //     if (notification.metrics.pixels > 10.0 && !_indicatorOnScrollStatus) {
+      //       setState(() {
+      //         _indicatorOnScrollStatus = !_indicatorOnScrollStatus;
+      //       });
+      //     } else if (notification.metrics.pixels == 0.0 &&
+      //         _indicatorOnScrollStatus) {
+      //       setState(() {
+      //         _indicatorOnScrollStatus = !_indicatorOnScrollStatus;
+      //       });
+      //     }
 
-          if (widget.onEndReached == null || widget.isLastPage == true) {
-            return false;
-          }
+      //     if (widget.onEndReached == null || widget.isLastPage == true) {
+      //       return false;
+      //     }
 
-          if (notification.metrics.pixels >=
-              (notification.metrics.maxScrollExtent *
-                  (widget.onEndReachedThreshold ?? 0.75))) {
-            if (widget.items.isEmpty || _isNextPageLoading) return false;
+      //     if (notification.metrics.pixels >=
+      //         (notification.metrics.maxScrollExtent *
+      //             (widget.onEndReachedThreshold ?? 0.75))) {
+      //       if (widget.items.isEmpty || _isNextPageLoading) return false;
 
-            _controller.duration = Duration.zero;
-            _controller.forward();
+      //       _controller.duration = Duration.zero;
+      //       _controller.forward();
 
-            setState(() {
-              _isNextPageLoading = true;
-            });
+      //       setState(() {
+      //         _isNextPageLoading = true;
+      //       });
 
-            widget.onEndReached!().whenComplete(() {
-              _controller.duration = const Duration(milliseconds: 300);
-              _controller.reverse();
+      //       widget.onEndReached!().whenComplete(() {
+      //         _controller.duration = const Duration(milliseconds: 300);
+      //         _controller.reverse();
 
-              setState(() {
-                _isNextPageLoading = false;
-              });
-            });
-          }
+      //         setState(() {
+      //           _isNextPageLoading = false;
+      //         });
+      //       });
+      //     }
 
-          return false;
-        },
-        child: CustomScrollView(
+      //     return false;
+      //   },
+      Scaffold(
+        backgroundColor: InheritedChatTheme.of(context).theme.backgroundColor,
+        body: CustomScrollView(
           controller: widget.scrollController,
           keyboardDismissBehavior: widget.keyboardDismissBehavior,
           physics: widget.scrollPhysics,
