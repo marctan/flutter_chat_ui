@@ -37,7 +37,7 @@ class AudioMessage extends StatefulWidget {
 class _AudioMessageState extends State<AudioMessage> {
   final _audioPlayer = FlutterSoundPlayer(logLevel: Level.nothing);
 
-  bool _playing = false;
+  bool _isLoading = false;
   bool _audioPlayerReady = false;
   bool _wasPlayingBeforeSeeking = false;
 
@@ -45,59 +45,6 @@ class _AudioMessageState extends State<AudioMessage> {
   void initState() {
     super.initState();
     _initAudioPlayer();
-  }
-
-  @override
-  void dispose() {
-    _audioPlayer.closeAudioSession();
-    super.dispose();
-  }
-
-  Future<void> _initAudioPlayer() async {
-    await _audioPlayer.openAudioSession();
-    if (mounted) {
-      setState(() {
-        _audioPlayerReady = true;
-      });
-    }
-  }
-
-  Future<void> _togglePlaying() async {
-    if (!_audioPlayerReady) return;
-    if (_playing) {
-      await _audioPlayer.pausePlayer();
-      setState(() {
-        _playing = false;
-      });
-    } else if (_audioPlayer.isPaused) {
-      await _audioPlayer.resumePlayer();
-      setState(() {
-        _playing = true;
-      });
-
-      if (widget.onStartPlayback != null) {
-        widget.onStartPlayback!(widget.message);
-      }
-    } else {
-      await _audioPlayer.setSubscriptionDuration(
-        const Duration(milliseconds: 10),
-      );
-      await _audioPlayer.startPlayer(
-        fromURI: widget.message.uri,
-        whenFinished: () {
-          setState(() {
-            _playing = false;
-          });
-        },
-      );
-      setState(() {
-        _playing = true;
-      });
-
-      if (widget.onStartPlayback != null) {
-        widget.onStartPlayback!(widget.message);
-      }
-    }
   }
 
   @override
@@ -110,34 +57,54 @@ class _AudioMessageState extends State<AudioMessage> {
       child: Row(
         mainAxisSize: MainAxisSize.max,
         children: [
-          IconButton(
-            tooltip: _audioPlayer.isPlaying
-                ? InheritedL10n.of(context).l10n.pauseButtonAccessibilityLabel
-                : InheritedL10n.of(context).l10n.playButtonAccessibilityLabel,
-            padding: EdgeInsets.zero,
-            onPressed: _audioPlayerReady ? _togglePlaying : null,
-            icon: _playing
-                ? (InheritedChatTheme.of(context).theme.pauseButtonIcon != null
-                    ? Image.asset(
-                        InheritedChatTheme.of(context).theme.pauseButtonIcon!,
-                        color: _color,
-                      )
-                    : Icon(
-                        Icons.pause_circle_filled,
-                        color: _color,
-                        size: 44,
-                      ))
-                : (InheritedChatTheme.of(context).theme.playButtonIcon != null
-                    ? Image.asset(
-                        InheritedChatTheme.of(context).theme.playButtonIcon!,
-                        color: _color,
-                      )
-                    : Icon(
-                        Icons.play_circle_fill,
-                        color: _color,
-                        size: 44,
-                      )),
-          ),
+          _isLoading
+              ? const CircularProgressIndicator(
+                  backgroundColor: Colors.transparent,
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Color(0xFF1FD189),
+                  ),
+                )
+              : IconButton(
+                  tooltip: _audioPlayer.isPlaying
+                      ? InheritedL10n.of(context)
+                          .l10n
+                          .pauseButtonAccessibilityLabel
+                      : InheritedL10n.of(context)
+                          .l10n
+                          .playButtonAccessibilityLabel,
+                  padding: EdgeInsets.zero,
+                  // ignore: prefer_expression_function_bodies
+                  onPressed: _audioPlayerReady ? _togglePlaying : null,
+
+                  icon: _audioPlayer.isPlaying
+                      ? (InheritedChatTheme.of(context).theme.pauseButtonIcon !=
+                              null
+                          ? Image.asset(
+                              InheritedChatTheme.of(context)
+                                  .theme
+                                  .pauseButtonIcon!,
+                              color: _color,
+                            )
+                          : Icon(
+                              Icons.pause_circle_filled,
+                              color: _color,
+                              size: 44,
+                            ))
+                      : (InheritedChatTheme.of(context).theme.playButtonIcon !=
+                              null
+                          ? Image.asset(
+                              InheritedChatTheme.of(context)
+                                  .theme
+                                  .playButtonIcon!,
+                              color: _color,
+                            )
+                          : Icon(
+                              Icons.play_circle_fill,
+                              color: _color,
+                              size: 44,
+                            )),
+                ),
           Flexible(
             child: Container(
               margin: const EdgeInsets.only(
@@ -152,49 +119,47 @@ class _AudioMessageState extends State<AudioMessage> {
                     child: _audioPlayer.isPlaying || _audioPlayer.isPaused
                         ? StreamBuilder<PlaybackDisposition>(
                             stream: _audioPlayer.onProgress,
-                            builder: (context, snapshot) {
-                              return WaveForm(
-                                accessibilityLabel: InheritedL10n.of(context)
-                                    .l10n
-                                    .audioTrackAccessibilityLabel,
-                                onTap: _togglePlaying,
-                                onStartSeeking: () async {
-                                  _wasPlayingBeforeSeeking =
-                                      _audioPlayer.isPlaying;
-                                  if (_audioPlayer.isPlaying) {
-                                    await _audioPlayer.pausePlayer();
-                                  }
-                                },
-                                onSeek: snapshot.hasData
-                                    ? (newPosition) async {
-                                        print(newPosition.toString());
-                                        await _audioPlayer
-                                            .seekToPlayer(newPosition);
-                                        if (_wasPlayingBeforeSeeking) {
-                                          await _audioPlayer.resumePlayer();
-                                          _wasPlayingBeforeSeeking = false;
-                                        }
+                            builder: (context, snapshot) => WaveForm(
+                              accessibilityLabel: InheritedL10n.of(context)
+                                  .l10n
+                                  .audioTrackAccessibilityLabel,
+                              onTap: _togglePlaying,
+                              onStartSeeking: () async {
+                                _wasPlayingBeforeSeeking =
+                                    _audioPlayer.isPlaying;
+                                if (_audioPlayer.isPlaying) {
+                                  await _audioPlayer.pausePlayer();
+                                }
+                              },
+                              onSeek: snapshot.hasData
+                                  ? (newPosition) async {
+                                      await _audioPlayer
+                                          .seekToPlayer(newPosition);
+                                      if (_wasPlayingBeforeSeeking) {
+                                        await _audioPlayer.resumePlayer();
+                                        _wasPlayingBeforeSeeking = false;
                                       }
-                                    : null,
-                                waveForm: widget.message.waveForm,
-                                color: Color(0xff1d1c21),
-                                duration: snapshot.hasData
-                                    ? snapshot.data!.duration
-                                    : widget.message.length,
-                                position: snapshot.hasData
-                                    ? snapshot.data!.position
-                                    : const Duration(),
-                              );
-                            })
+                                    }
+                                  : null,
+                              waveForm: widget.message.waveForm,
+                              color: const Color(0xff1d1c21),
+                              duration: snapshot.hasData
+                                  ? snapshot.data!.duration
+                                  : widget.message.length,
+                              position: snapshot.hasData
+                                  ? snapshot.data!.position
+                                  : Duration.zero,
+                            ),
+                          )
                         : WaveForm(
                             accessibilityLabel: InheritedL10n.of(context)
                                 .l10n
                                 .audioTrackAccessibilityLabel,
                             onTap: _togglePlaying,
                             waveForm: widget.message.waveForm,
-                            color: Color(0xff1d1c21),
+                            color: const Color(0xff1d1c21),
                             duration: widget.message.length,
-                            position: const Duration(),
+                            position: Duration.zero,
                           ),
                   ),
                   const SizedBox(
@@ -202,26 +167,25 @@ class _AudioMessageState extends State<AudioMessage> {
                   ),
                   if (_audioPlayer.isPlaying || _audioPlayer.isPaused)
                     StreamBuilder<PlaybackDisposition>(
-                        stream: _audioPlayer.onProgress,
-                        builder: (context, snapshot) {
-                          return Text(
-                            AudioMessage.durationFormat.format(
-                              DateTime.fromMillisecondsSinceEpoch(
-                                snapshot.hasData
-                                    ? snapshot.data!.duration.inMilliseconds -
-                                        snapshot.data!.position.inMilliseconds
-                                    : widget.message.length.inMilliseconds,
-                              ).toUtc(),
+                      stream: _audioPlayer.onProgress,
+                      builder: (context, snapshot) => Text(
+                        AudioMessage.durationFormat.format(
+                          DateTime.fromMillisecondsSinceEpoch(
+                            snapshot.hasData
+                                ? snapshot.data!.duration.inMilliseconds -
+                                    snapshot.data!.position.inMilliseconds
+                                : widget.message.length.inMilliseconds,
+                          ).toUtc(),
+                        ),
+                        style: InheritedChatTheme.of(context)
+                            .theme
+                            .receivedMessageCaptionTextStyle
+                            .copyWith(
+                              color: const Color(0xff1d1d21),
                             ),
-                            style: InheritedChatTheme.of(context)
-                                .theme
-                                .receivedMessageCaptionTextStyle
-                                .copyWith(
-                                  color: Color(0xff1d1d21),
-                                ),
-                            textWidthBasis: TextWidthBasis.longestLine,
-                          );
-                        })
+                        textWidthBasis: TextWidthBasis.longestLine,
+                      ),
+                    )
                   else
                     Text(
                       AudioMessage.durationFormat.format(
@@ -233,7 +197,7 @@ class _AudioMessageState extends State<AudioMessage> {
                           .theme
                           .receivedMessageCaptionTextStyle
                           .copyWith(
-                            color: Color(0xff1d1d21),
+                            color: const Color(0xff1d1d21),
                           ),
                       textWidthBasis: TextWidthBasis.longestLine,
                     ),
@@ -244,5 +208,61 @@ class _AudioMessageState extends State<AudioMessage> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    stopPlayer();
+    _audioPlayer.closePlayer();
+    super.dispose();
+  }
+
+  void play(String uri) async {
+    setState(() {
+      _isLoading = true;
+    });
+    await _audioPlayer.startPlayer(
+      fromURI: uri,
+      whenFinished: () {
+        setState(() {});
+      },
+    );
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  Future<void> stopPlayer() async {
+    await _audioPlayer.stopPlayer();
+  }
+
+  Future<void> _initAudioPlayer() async {
+    await _audioPlayer.openPlayer();
+    if (mounted) {
+      setState(() {
+        _audioPlayerReady = true;
+      });
+    }
+  }
+
+  Future<void> _togglePlaying() async {
+    if (!_audioPlayerReady) return;
+    if (_audioPlayer.isPlaying) {
+      await _audioPlayer.pausePlayer();
+    } else if (_audioPlayer.isPaused) {
+      await _audioPlayer.resumePlayer();
+
+      if (widget.onStartPlayback != null) {
+        widget.onStartPlayback!(widget.message);
+      }
+    } else {
+      await _audioPlayer.setSubscriptionDuration(
+        const Duration(milliseconds: 10),
+      );
+      play(widget.message.uri);
+      if (widget.onStartPlayback != null) {
+        widget.onStartPlayback!(widget.message);
+      }
+    }
   }
 }

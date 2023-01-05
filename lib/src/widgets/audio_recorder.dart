@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:logger/logger.dart' show Level, Logger;
 
 class AudioRecording {
   const AudioRecording({
@@ -39,7 +40,7 @@ class AudioRecorder extends StatefulWidget {
 }
 
 class AudioRecorderState extends State<AudioRecorder> {
-  final _audioRecorder = FlutterSoundRecorder();
+  final _audioRecorder = FlutterSoundRecorder(logLevel: Level.nothing);
   final _audioRecorderDurationFormat = DateFormat('mm:ss:SS', 'en_US');
 
   bool _audioRecorderReady = false;
@@ -57,11 +58,11 @@ class AudioRecorderState extends State<AudioRecorder> {
   @override
   Future<void> dispose() async {
     super.dispose();
-    await _audioRecorder.closeAudioSession();
+    await _audioRecorder.closeRecorder();
   }
 
   Future<void> _initAudioRecorder() async {
-    await _audioRecorder.openAudioSession();
+    await _audioRecorder.openRecorder();
     setState(() {
       _audioRecorderReady = true;
     });
