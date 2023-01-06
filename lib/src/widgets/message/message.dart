@@ -354,7 +354,7 @@ class Message extends StatelessWidget {
           },
         );
       },
-      key: UniqueKey(),
+      key: Key(message.id),
       child: Container(
         alignment: _currentUserIsAuthor
             ? AlignmentDirectional.centerEnd
