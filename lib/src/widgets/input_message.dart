@@ -178,8 +178,8 @@ class _InputMessageState extends State<InputMessage> {
             child: const VideoRecorder(),
           ),
         ),
-        transitionDuration: const Duration(milliseconds: 200),
-        reverseTransitionDuration: const Duration(milliseconds: 100),
+        transitionDuration: const Duration(milliseconds: 300),
+        reverseTransitionDuration: const Duration(milliseconds: 300),
         transitionsBuilder: (
           BuildContext context,
           Animation<double> animation,
