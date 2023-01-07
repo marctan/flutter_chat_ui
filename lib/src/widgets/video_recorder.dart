@@ -37,34 +37,13 @@ class _VideoRecorderState extends State<VideoRecorder>
   DateTime? _recordingStopTime;
   Timer? _recordingTimer;
 
+  bool _isVideoCameraSelected = false;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance?.addObserver(this);
     _initCamera();
-  }
-
-  Future<void> _initCamera() async {
-    final allCameras = await availableCameras();
-    if (allCameras.isNotEmpty) {
-      for (final camera in allCameras) {
-        if (!_cameras
-            .any((element) => element.lensDirection == camera.lensDirection)) {
-          _cameras.add(camera);
-        }
-      }
-
-      final frontCameraIndex = _cameras.indexWhere(
-          (element) => element.lensDirection == CameraLensDirection.front);
-      if (frontCameraIndex > -1) {
-        _currentCameraIndex = frontCameraIndex;
-      } else {
-        _currentCameraIndex = 0;
-      }
-      await onNewCameraSelected(_cameras[_currentCameraIndex!]);
-
-      await _startRecording();
-    }
   }
 
   @override
@@ -106,10 +85,10 @@ class _VideoRecorderState extends State<VideoRecorder>
 
     // If the controller is updated then update the UI.
     cameraController.addListener(() {
-      if (mounted) setState(() {});
       if (cameraController.value.hasError) {
         _showInSnackBar(
-            'Camera error ${cameraController.value.errorDescription}');
+          'Camera error ${cameraController.value.errorDescription}',
+        );
       }
     });
 
@@ -121,6 +100,281 @@ class _VideoRecorderState extends State<VideoRecorder>
 
     if (mounted) {
       setState(() {});
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cameraController = _controller;
+
+    return Material(
+      color: Colors.black,
+      child: SafeArea(
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                Center(
+                  child: cameraController == null
+                      ? Text(
+                          InheritedL10n.of(context)
+                              .l10n
+                              .noCameraAvailableMessage,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyText1!
+                              .copyWith(color: const Color(0xFF1FD189)),
+                        )
+                      : (!cameraController.value.isInitialized
+                          ? const CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Color(0xFF1FD189),
+                              ),
+                            )
+                          : Container()),
+                ),
+                if (cameraController != null &&
+                    cameraController.value.isInitialized)
+                  Expanded(
+                    child: CameraPreview(cameraController),
+                  ),
+                Container(
+                  color: Colors.black,
+                  height: 100,
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextButton(
+                              onPressed: _recordingStartTime != null
+                                  ? null
+                                  : () {
+                                      if (_isVideoCameraSelected) {
+                                        setState(() {
+                                          _isVideoCameraSelected = false;
+                                        });
+                                      }
+                                    },
+                              style: TextButton.styleFrom(
+                                foregroundColor: _isVideoCameraSelected
+                                    ? Colors.black54
+                                    : Colors.black,
+                                backgroundColor: _isVideoCameraSelected
+                                    ? Colors.white30
+                                    : Colors.white,
+                              ),
+                              child: const Text('Image'),
+                            ),
+                          ),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                if (!_isVideoCameraSelected) {
+                                  setState(() {
+                                    _isVideoCameraSelected = true;
+                                  });
+                                }
+                              },
+                              style: TextButton.styleFrom(
+                                foregroundColor: _isVideoCameraSelected
+                                    ? Colors.black
+                                    : Colors.black54,
+                                backgroundColor: _isVideoCameraSelected
+                                    ? Colors.white
+                                    : Colors.white30,
+                              ),
+                              child: const Text('Video'),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: _isVideoCameraSelected
+                            ? MainAxisAlignment.spaceBetween
+                            : MainAxisAlignment.center,
+                        children: [
+                          if (_isVideoCameraSelected)
+                            _recordingStartTime != null
+                                ? Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0,
+                                    ),
+                                    child: RecordingIndicator(
+                                      recording: _controller != null &&
+                                          _controller!.value.isRecordingVideo,
+                                      duration: _recordingStartTime == null
+                                          ? null
+                                          : Duration(
+                                              milliseconds: (_recordingStopTime !=
+                                                          null
+                                                      ? _recordingStopTime!
+                                                          .millisecondsSinceEpoch
+                                                      : DateTime.now()
+                                                          .millisecondsSinceEpoch) -
+                                                  _recordingStartTime!
+                                                      .millisecondsSinceEpoch,
+                                            ),
+                                    ),
+                                  )
+                                : Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: TextButton(
+                                      onPressed: () {
+                                        _startRecording();
+                                      },
+                                      child: const Text(
+                                        'Start Recording',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                          if (_isVideoCameraSelected)
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text(
+                                InheritedL10n.of(context)
+                                    .l10n
+                                    .cancelVideoRecordingButton,
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          Row(
+                            children: [
+                              if (cameraController != null &&
+                                  cameraController.value.isInitialized &&
+                                  _cameras.length > 1)
+                                IconButton(
+                                  tooltip: InheritedL10n.of(context)
+                                      .l10n
+                                      .videoRecordingSwitchCamera,
+                                  icon: const Icon(
+                                    Icons.switch_camera,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: _controller != null &&
+                                          _controller!.value.isInitialized &&
+                                          !_controller!.value.isRecordingVideo
+                                      ? () {
+                                          _currentCameraIndex =
+                                              (_currentCameraIndex! + 1) %
+                                                  _cameras.length;
+                                          onNewCameraSelected(
+                                            _cameras[_currentCameraIndex!],
+                                          );
+                                        }
+                                      : null,
+                                ),
+                              if (!_isVideoCameraSelected)
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text(
+                                    InheritedL10n.of(context)
+                                        .l10n
+                                        .cancelVideoRecordingButton,
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              if (_isVideoCameraSelected)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8.0,
+                                  ),
+                                  child: IconButton(
+                                    icon: InheritedChatTheme.of(context)
+                                                .theme
+                                                .sendButtonIcon !=
+                                            null
+                                        ? Image.asset(
+                                            InheritedChatTheme.of(context)
+                                                .theme
+                                                .audioButtonIcon!,
+                                            color: Colors.white,
+                                          )
+                                        : Image.asset(
+                                            'assets/icon-send.png',
+                                            color: Colors.white,
+                                            package: 'flutter_chat_ui',
+                                          ),
+                                    onPressed: _controller != null &&
+                                            _controller!.value.isInitialized &&
+                                            _controller!.value.isRecordingVideo
+                                        ? _sendVideoRecording
+                                        : null,
+                                    padding: EdgeInsets.zero,
+                                    tooltip: InheritedL10n.of(context)
+                                        .l10n
+                                        .sendButtonAccessibilityLabel,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (cameraController != null &&
+                cameraController.value.isInitialized &&
+                _cameras.length > 1 &&
+                !_isVideoCameraSelected)
+              Padding(
+                padding: const EdgeInsets.only(
+                  bottom: 130,
+                  right: 10,
+                ),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: RawMaterialButton(
+                    splashColor: Colors.black,
+                    highlightColor: Colors.black,
+                    shape: const CircleBorder(),
+                    elevation: 1.0,
+                    onPressed: () {},
+                    child: const Icon(
+                      shadows: <Shadow>[
+                        Shadow(color: Colors.black, blurRadius: 15.0),
+                      ],
+                      Icons.camera_sharp,
+                      color: Colors.white,
+                      size: 80,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _initCamera() async {
+    final allCameras = await availableCameras();
+    if (allCameras.isNotEmpty) {
+      for (final camera in allCameras) {
+        if (!_cameras
+            .any((element) => element.lensDirection == camera.lensDirection)) {
+          _cameras.add(camera);
+        }
+      }
+
+      final frontCameraIndex = _cameras.indexWhere(
+        (element) => element.lensDirection == CameraLensDirection.front,
+      );
+      if (frontCameraIndex > -1) {
+        _currentCameraIndex = frontCameraIndex;
+      } else {
+        _currentCameraIndex = 0;
+      }
+      await onNewCameraSelected(_cameras[_currentCameraIndex!]);
+
+      // await _startRecording();
     }
   }
 
@@ -177,172 +431,6 @@ class _VideoRecorderState extends State<VideoRecorder>
           milliseconds: _recordingStopTime!.millisecondsSinceEpoch -
               _recordingStartTime!.millisecondsSinceEpoch,
         ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final cameraController = _controller;
-    return Material(
-      color: Colors.transparent,
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-              child: Container(
-                color: Colors.grey.shade700.withOpacity(0.8),
-              ),
-            ),
-          ),
-          SafeArea(
-            child: Center(
-              child: cameraController == null
-                  ? Text(
-                      InheritedL10n.of(context).l10n.noCameraAvailableMessage,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyText1!
-                          .copyWith(color: Color(0xFF1FD189)),
-                    )
-                  : (!cameraController.value.isInitialized
-                      ? const CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Color(0xFF1FD189)),
-                        )
-                      : Container()),
-            ),
-          ),
-          if (cameraController != null && cameraController.value.isInitialized)
-            SafeArea(
-              child: Center(
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.all(Radius.circular(20)),
-                    child: CameraPreview(cameraController),
-                  ),
-                ),
-              ),
-            ),
-          SafeArea(
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                color: Colors.white,
-                width: double.maxFinite,
-                height: 80,
-                child: Stack(
-                  //mainAxisSize: MainAxisSize.max,
-                  //crossAxisAlignment: CrossAxisAlignment.center,
-                  //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: RecordingIndicator(
-                          recording: _controller != null &&
-                              _controller!.value.isRecordingVideo,
-                          duration: _recordingStartTime == null
-                              ? null
-                              : Duration(
-                                  milliseconds: (_recordingStopTime != null
-                                          ? _recordingStopTime!
-                                              .millisecondsSinceEpoch
-                                          : DateTime.now()
-                                              .millisecondsSinceEpoch) -
-                                      _recordingStartTime!
-                                          .millisecondsSinceEpoch),
-                        ),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.center,
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text(
-                          InheritedL10n.of(context)
-                              .l10n
-                              .cancelVideoRecordingButton,
-                          style: const TextStyle(color: Color(0xFF1FD189)),
-                        ),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: IconButton(
-                          icon: InheritedChatTheme.of(context)
-                                      .theme
-                                      .sendButtonIcon !=
-                                  null
-                              ? Image.asset(
-                                  InheritedChatTheme.of(context)
-                                      .theme
-                                      .audioButtonIcon!,
-                                  color: Colors.white,
-                                )
-                              : Image.asset(
-                                  'assets/icon-send.png',
-                                  color: Color(0xFF1FD189),
-                                  package: 'flutter_chat_ui',
-                                ),
-                          onPressed: _controller != null &&
-                                  _controller!.value.isInitialized &&
-                                  _controller!.value.isRecordingVideo
-                              ? _sendVideoRecording
-                              : null,
-                          padding: EdgeInsets.zero,
-                          tooltip: InheritedL10n.of(context)
-                              .l10n
-                              .sendButtonAccessibilityLabel,
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ),
-          /*if (cameraController != null &&
-              cameraController.value.isInitialized &&
-              _cameras.length > 1)
-            SafeArea(
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    top: 20,
-                    left: 20,
-                  ),
-                  child: IconButton(
-                    tooltip: InheritedL10n.of(context)
-                        .l10n
-                        .videoRecordingSwitchCamera,
-                    icon: const Icon(
-                      Icons.switch_camera_outlined,
-                      color: Colors.white,
-                    ),
-                    onPressed: _controller != null &&
-                            _controller!.value.isInitialized &&
-                            !_controller!.value.isRecordingVideo
-                        ? () async {
-                            _currentCameraIndex =
-                                (_currentCameraIndex! + 1) % _cameras.length;
-                            await onNewCameraSelected(
-                                _cameras[_currentCameraIndex!]);
-                          }
-                        : null,
-                  ),
-                ),
-              ),
-            ),*/
-        ],
       ),
     );
   }

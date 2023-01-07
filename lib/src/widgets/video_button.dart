@@ -14,6 +14,7 @@ class VideoButton extends StatelessWidget {
   final void Function()? onPressed;
 
   @override
+  // ignore: prefer_expression_function_bodies
   Widget build(BuildContext context) {
     return Container(
       width: 24,
@@ -25,8 +26,8 @@ class VideoButton extends StatelessWidget {
                 InheritedChatTheme.of(context).theme.videoButtonIcon!,
                 color: Color(0xFF1FD189),
               )
-            : Icon(
-                Icons.videocam_outlined,
+            : const Icon(
+                Icons.photo_camera,
                 color: Color(0xFF1FD189),
               ),
         padding: EdgeInsets.zero,
