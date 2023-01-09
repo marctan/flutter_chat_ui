@@ -309,7 +309,7 @@ class _VideoRecorderState extends State<VideoRecorder>
                 _cameras.isNotEmpty)
               Padding(
                 padding: EdgeInsets.only(
-                  bottom: height * 0.15 / size.aspectRatio,
+                  bottom: height * 0.18 / size.aspectRatio,
                   right: 10,
                 ),
                 child: Align(
@@ -343,7 +343,7 @@ class _VideoRecorderState extends State<VideoRecorder>
               ),
             Padding(
               padding: EdgeInsets.symmetric(
-                vertical: height * 0.15 / size.aspectRatio,
+                vertical: height * 0.18 / size.aspectRatio,
                 horizontal: 20,
               ),
               child: Align(
