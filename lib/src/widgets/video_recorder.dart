@@ -109,6 +109,11 @@ class _VideoRecorderState extends State<VideoRecorder>
   @override
   Widget build(BuildContext context) {
     final cameraController = _controller;
+    final size = MediaQuery.of(context).size;
+    final height = MediaQuery.of(context).size.height -
+        AppBar().preferredSize.height -
+        MediaQuery.of(context).padding.top -
+        MediaQuery.of(context).padding.bottom;
 
     return Material(
       color: Colors.black,
@@ -143,7 +148,6 @@ class _VideoRecorderState extends State<VideoRecorder>
                     cameraController.value.isInitialized)
                   Container(
                     color: Colors.black,
-                    height: 100,
                     child: Column(
                       children: [
                         Row(
@@ -302,10 +306,10 @@ class _VideoRecorderState extends State<VideoRecorder>
             ),
             if (cameraController != null &&
                 cameraController.value.isInitialized &&
-                _cameras.length > 1)
+                _cameras.isNotEmpty)
               Padding(
-                padding: const EdgeInsets.only(
-                  bottom: 50,
+                padding: EdgeInsets.only(
+                  bottom: height * 0.15 / size.aspectRatio,
                   right: 10,
                 ),
                 child: Align(
@@ -338,8 +342,10 @@ class _VideoRecorderState extends State<VideoRecorder>
                 ),
               ),
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 230, horizontal: 30),
+              padding: EdgeInsets.symmetric(
+                vertical: height * 0.15 / size.aspectRatio,
+                horizontal: 20,
+              ),
               child: Align(
                 alignment: Alignment.bottomLeft,
                 child: Stack(
@@ -352,7 +358,7 @@ class _VideoRecorderState extends State<VideoRecorder>
                     ),
                     if (cameraController != null &&
                         cameraController.value.isInitialized &&
-                        _cameras.length > 1)
+                        _cameras.isNotEmpty)
                       IconButton(
                         tooltip: InheritedL10n.of(context)
                             .l10n
