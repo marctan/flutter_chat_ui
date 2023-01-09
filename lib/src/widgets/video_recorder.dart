@@ -143,7 +143,12 @@ class _VideoRecorderState extends State<VideoRecorder>
                 ),
                 if (cameraController != null &&
                     cameraController.value.isInitialized)
-                  Center(child: CameraPreview(cameraController)),
+                  SizedBox(
+                    height: size.height / cameraController.value.aspectRatio,
+                    child: CameraPreview(
+                      cameraController,
+                    ),
+                  ),
                 if (cameraController != null &&
                     cameraController.value.isInitialized)
                   Container(
@@ -309,7 +314,7 @@ class _VideoRecorderState extends State<VideoRecorder>
                 _cameras.isNotEmpty)
               Padding(
                 padding: EdgeInsets.only(
-                  bottom: height * 0.18 / size.aspectRatio,
+                  bottom: height * 0.16 / size.aspectRatio,
                   right: 10,
                 ),
                 child: Align(
@@ -343,7 +348,7 @@ class _VideoRecorderState extends State<VideoRecorder>
               ),
             Padding(
               padding: EdgeInsets.symmetric(
-                vertical: height * 0.18 / size.aspectRatio,
+                vertical: height * 0.16 / size.aspectRatio,
                 horizontal: 20,
               ),
               child: Align(
