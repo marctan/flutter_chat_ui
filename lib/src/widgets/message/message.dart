@@ -210,7 +210,7 @@ class Message extends StatelessWidget {
         return InheritedChatTheme.of(context).theme.deliveredIcon != null
             ? InheritedChatTheme.of(context).theme.deliveredIcon!
             : Image.asset(
-                'assets/icon-delivered.png',
+                'assets/icon-delivered-2.png',
                 color: InheritedChatTheme.of(context).theme.primaryColor,
                 package: 'flutter_chat_ui',
               );
@@ -226,7 +226,7 @@ class Message extends StatelessWidget {
         return InheritedChatTheme.of(context).theme.seenIcon != null
             ? InheritedChatTheme.of(context).theme.seenIcon!
             : Image.asset(
-                'assets/icon-seen.png',
+                'assets/icon-seen-2.png',
                 color: InheritedChatTheme.of(context).theme.primaryColor,
                 package: 'flutter_chat_ui',
               );
