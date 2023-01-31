@@ -93,7 +93,7 @@ class _InputMessageState extends State<InputMessage> {
           backgroundColor: Colors.transparent,
           strokeWidth: 2,
           valueColor: AlwaysStoppedAnimation<Color>(
-            Color(0xFF1FD189),
+            Color(0xFF0A81FF),
           ),
         ),
       );
@@ -114,7 +114,7 @@ class _InputMessageState extends State<InputMessage> {
           backgroundColor: Colors.transparent,
           strokeWidth: 2,
           valueColor: AlwaysStoppedAnimation<Color>(
-            Color(0xFF1FD189),
+            Color(0xFF0A81FF),
           ),
         ),
       );
@@ -286,20 +286,9 @@ class _InputMessageState extends State<InputMessage> {
               padding: const EdgeInsets.only(left: 20),
               child: GestureDetector(
                 onTap: _handleSendPressed,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xFF1FD189),
-                  ),
-                  child: const Icon(Icons.send, color: Colors.white),
-                ),
+                child: const Icon(Icons.send, color: Color(0xFF007AFF)),
               ),
             ),
-          ),
-          Visibility(
-            visible: widget.onAudioRecorded != null && !_sendButtonVisible,
-            child: _audioWidget(),
           ),
           Visibility(
             visible: !kIsWeb &&
@@ -307,6 +296,10 @@ class _InputMessageState extends State<InputMessage> {
                 !_sendButtonVisible &&
                 !_recordingAudio,
             child: _videoWidget(),
+          ),
+          Visibility(
+            visible: widget.onAudioRecorded != null && !_sendButtonVisible,
+            child: _audioWidget(),
           ),
         ],
       ),
@@ -319,13 +312,10 @@ class _InputMessageState extends State<InputMessage> {
           ? const CircularProgressIndicator()
           : GestureDetector(
               onTap: () => widget.onAttachmentPressed?.call(),
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Color(0xFF1FD189),
-                ),
-                child: const Icon(Icons.add, color: Colors.white),
+              child: const Icon(
+                Icons.add,
+                color: Color(0xFF0A81FF),
+                size: 25,
               ),
             )
     ];

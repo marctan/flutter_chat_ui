@@ -108,9 +108,12 @@ class Chat extends StatefulWidget {
     this.onStartVideoRecording,
     this.onVideoRecorded,
     this.onStartAudioVideoPlayback,
+    this.bgPath,
   });
 
-  /// See [Message.audioMessageBuilder].
+  final String? bgPath;
+
+  /// See [Messase.audioMessageBuilder].
   final Widget Function(types.AudioMessage, {required int messageWidth})?
       audioMessageBuilder;
 
@@ -463,7 +466,17 @@ class ChatState extends State<Chat> {
               child: Stack(
                 children: [
                   Container(
-                    color: widget.theme.backgroundColor,
+                    color: widget.bgPath != null
+                        ? null
+                        : widget.theme.backgroundColor,
+                    decoration: widget.bgPath != null
+                        ? BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(widget.bgPath!),
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : null,
                     child: Column(
                       children: [
                         Flexible(

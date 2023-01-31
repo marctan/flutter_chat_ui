@@ -291,7 +291,7 @@ class Message extends StatelessWidget {
     return SwipeableTile.swipeToTigger(
       behavior: HitTestBehavior.translucent,
       isEelevated: false,
-      color: InheritedChatTheme.of(context).theme.backgroundColor,
+      color:Colors.transparent,
       swipeThreshold: 0.3,
       direction: enableSwipe ? replySwipeDirection : SwipeDirection.none,
       onSwiped: (_) {

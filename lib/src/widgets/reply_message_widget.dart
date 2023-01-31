@@ -39,7 +39,7 @@ class ReplyMessageWidget extends StatelessWidget {
         child: Row(
       children: [
         Container(
-          color: Colors.green,
+          color: Color(0xFF1BB9D5),
           width: 4,
         ),
         const SizedBox(width: 8),
@@ -72,7 +72,7 @@ class ReplyMessageWidget extends StatelessWidget {
                   '${message?.metadata?['userName']}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontWeight: FontWeight.bold,color: Color(0xFF1BB9D5)),
                 ),
               ),
               if (onCancelReply != null)

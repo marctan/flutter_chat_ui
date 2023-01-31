@@ -26,27 +26,27 @@ class AudioButton extends StatelessWidget {
         icon: InheritedChatTheme.of(context).theme.audioButtonIcon != null
             ? Image.asset(
                 InheritedChatTheme.of(context).theme.audioButtonIcon!,
-                color: Color(0xFF1FD189),
+                color: Color(0xFF0A81FF),
               )
             : recordingAudio
                 ? (InheritedChatTheme.of(context).theme.sendButtonIcon != null
                     ? Image.asset(
                         InheritedChatTheme.of(context).theme.audioButtonIcon!,
-                        color: Color(0xFF1FD189),
+                        color: Color(0xFF0A81FF),
                       )
                     : Image.asset(
                         'assets/icon-send.png',
-                        color: Color(0xFF1FD189),
+                        color: Color(0xFF0A81FF),
                         package: 'flutter_chat_ui',
                       ))
                 : (InheritedChatTheme.of(context).theme.audioButtonIcon != null
                     ? Image.asset(
                         InheritedChatTheme.of(context).theme.audioButtonIcon!,
-                        color: Color(0xFF1FD189),
+                        color: Color(0xFF0A81FF),
                       )
                     : Icon(
                         Icons.mic_none,
-                        color: Color(0xFF1FD189),
+                        color: Color(0xFF0A81FF),
                       )),
         padding: EdgeInsets.zero,
         onPressed: onPressed,

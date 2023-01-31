@@ -156,7 +156,7 @@ class _ChatListState extends State<ChatList>
       //     return false;
       //   },
       Scaffold(
-        backgroundColor: InheritedChatTheme.of(context).theme.backgroundColor,
+        backgroundColor: Colors.transparent,
         body: CustomScrollView(
           cacheExtent: 9999,
           controller: widget.scrollController,
