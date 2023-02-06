@@ -65,7 +65,10 @@ class Message extends StatelessWidget {
     this.videoMessageBuilder,
     this.enableSwipe = true,
     this.onStartAudioVideoPlayback,
+    this.roomType = types.RoomType.direct,
   });
+
+  final types.RoomType roomType;
 
   /// Playback callback
   final void Function(types.Message)? onStartAudioVideoPlayback;
@@ -291,7 +294,7 @@ class Message extends StatelessWidget {
     return SwipeableTile.swipeToTigger(
       behavior: HitTestBehavior.translucent,
       isEelevated: false,
-      color:Colors.transparent,
+      color: Colors.transparent,
       swipeThreshold: 0.3,
       direction: enableSwipe ? replySwipeDirection : SwipeDirection.none,
       onSwiped: (_) {
@@ -364,60 +367,74 @@ class Message extends StatelessWidget {
           end: kIsWeb ? 0 : _query.padding.right,
           start: 20 + (kIsWeb ? 0 : _query.padding.left),
         ),
-        child: Row(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisSize: MainAxisSize.min,
           children: [
-            if (!_currentUserIsAuthor && showUserAvatars) _avatarBuilder(),
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: messageWidth.toDouble(),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  GestureDetector(
-                    onDoubleTap: () =>
-                        onMessageDoubleTap?.call(context, message),
-                    onLongPress: () =>
-                        onMessageLongPress?.call(context, message),
-                    onTap: () => onMessageTap?.call(context, message),
-                    child: onMessageVisibilityChanged != null
-                        ? VisibilityDetector(
-                            key: Key(message.id),
-                            onVisibilityChanged: (visibilityInfo) =>
-                                onMessageVisibilityChanged!(
-                              message,
-                              visibilityInfo.visibleFraction > 0.1,
-                            ),
-                            child: _bubbleBuilder(
-                              context,
-                              borderRadius.resolve(Directionality.of(context)),
-                              _currentUserIsAuthor,
-                              _enlargeEmojis,
-                            ),
-                          )
-                        : _bubbleBuilder(
-                            context,
-                            borderRadius.resolve(Directionality.of(context)),
-                            _currentUserIsAuthor,
-                            _enlargeEmojis,
-                          ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (!_currentUserIsAuthor && showUserAvatars) _avatarBuilder(),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: messageWidth.toDouble(),
                   ),
-                ],
-              ),
-            ),
-            if (_currentUserIsAuthor)
-              Padding(
-                padding: InheritedChatTheme.of(context).theme.statusIconPadding,
-                child: showStatus
-                    ? GestureDetector(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      GestureDetector(
+                        onDoubleTap: () =>
+                            onMessageDoubleTap?.call(context, message),
                         onLongPress: () =>
-                            onMessageStatusLongPress?.call(context, message),
-                        onTap: () => onMessageStatusTap?.call(context, message),
-                        child: _statusBuilder(context),
-                      )
-                    : null,
+                            onMessageLongPress?.call(context, message),
+                        onTap: () => onMessageTap?.call(context, message),
+                        child: onMessageVisibilityChanged != null
+                            ? VisibilityDetector(
+                                key: Key(message.id),
+                                onVisibilityChanged: (visibilityInfo) =>
+                                    onMessageVisibilityChanged!(
+                                  message,
+                                  visibilityInfo.visibleFraction > 0.1,
+                                ),
+                                child: _bubbleBuilder(
+                                  context,
+                                  borderRadius
+                                      .resolve(Directionality.of(context)),
+                                  _currentUserIsAuthor,
+                                  _enlargeEmojis,
+                                ),
+                              )
+                            : _bubbleBuilder(
+                                context,
+                                borderRadius
+                                    .resolve(Directionality.of(context)),
+                                _currentUserIsAuthor,
+                                _enlargeEmojis,
+                              ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (_currentUserIsAuthor && roomType == types.RoomType.direct)
+                  Padding(
+                    padding:
+                        InheritedChatTheme.of(context).theme.statusIconPadding,
+                    child: showStatus
+                        ? GestureDetector(
+                            onLongPress: () => onMessageStatusLongPress?.call(
+                                context, message),
+                            onTap: () =>
+                                onMessageStatusTap?.call(context, message),
+                            child: _statusBuilder(context),
+                          )
+                        : null,
+                  ),
+              ],
+            ),
+            if (_currentUserIsAuthor && roomType == types.RoomType.group)
+              customStatusBuilder!(
+                message,
+                context: context,
               ),
           ],
         ),

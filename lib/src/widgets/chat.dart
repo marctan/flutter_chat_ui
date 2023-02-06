@@ -109,9 +109,12 @@ class Chat extends StatefulWidget {
     this.onVideoRecorded,
     this.onStartAudioVideoPlayback,
     this.bgPath,
+    this.roomType = types.RoomType.direct,
   });
 
   final String? bgPath;
+
+  final types.RoomType roomType;
 
   /// See [Messase.audioMessageBuilder].
   final Widget Function(types.AudioMessage, {required int messageWidth})?
@@ -617,6 +620,7 @@ class ChatState extends State<Chat> {
                 : min(size * 0.78, 440).floor();
 
         messageWidget = Message(
+          roomType: widget.roomType,
           onStartAudioVideoPlayback: widget.onStartAudioVideoPlayback,
           enableSwipe: widget.enableSwipe,
           replySwipeDirection: message.author.id != widget.user.id
