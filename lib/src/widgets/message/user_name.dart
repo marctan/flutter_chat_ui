@@ -10,16 +10,18 @@ class UserName extends StatelessWidget {
   const UserName({
     super.key,
     required this.author,
+    this.metadata,
   });
 
   /// Author to show name from.
   final types.User author;
+  final Map<String, dynamic>? metadata;
 
   @override
   Widget build(BuildContext context) {
     final theme = InheritedChatTheme.of(context).theme;
     final color = getUserAvatarNameColor(author, theme.userAvatarNameColors);
-    final name = getUserName(author);
+    final name = getUserName(author, metadata);
 
     return name.isEmpty
         ? const SizedBox()

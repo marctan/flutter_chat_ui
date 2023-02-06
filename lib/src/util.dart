@@ -60,8 +60,8 @@ String getUserInitials(types.User user) {
 }
 
 /// Returns user name as joined firstName and lastName.
-String getUserName(types.User user) =>
-    '${user.firstName ?? ''} ${user.lastName ?? ''}'.trim();
+String getUserName(types.User user, Map<String, dynamic>? metadata) =>
+    '${metadata?['userName'] ?? user.firstName}'.trim();
 
 /// Returns formatted date used as a divider between different days in the
 /// chat history
