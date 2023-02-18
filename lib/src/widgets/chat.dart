@@ -110,9 +110,12 @@ class Chat extends StatefulWidget {
     this.onStartAudioVideoPlayback,
     this.bgPath,
     this.roomType = types.RoomType.direct,
+    this.messageId = '',
   });
 
   final String? bgPath;
+
+  final String messageId;
 
   final types.RoomType roomType;
 
@@ -429,6 +432,9 @@ class ChatState extends State<Chat> {
 
       _refreshAutoScrollMapping();
       _maybeScrollToFirstUnread();
+      if (widget.messageId.isNotEmpty) {
+        scrollToMessage(widget.messageId);
+      }
     }
   }
 
