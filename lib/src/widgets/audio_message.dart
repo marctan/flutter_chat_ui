@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_ui/src/widgets/reply_message_widget.dart';
 import 'package:flutter_chat_ui/src/widgets/wave_form.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:intl/intl.dart';
@@ -54,156 +55,168 @@ class _AudioMessageState extends State<AudioMessage> {
 
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 16, 24, 16),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
+      child: Column(
         children: [
-          _isLoading
-              ? const CircularProgressIndicator(
-                  backgroundColor: Colors.transparent,
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    Color(0xFF1FD189),
-                  ),
-                )
-              : IconButton(
-                  tooltip: _audioPlayer.isPlaying
-                      ? InheritedL10n.of(context)
-                          .l10n
-                          .pauseButtonAccessibilityLabel
-                      : InheritedL10n.of(context)
-                          .l10n
-                          .playButtonAccessibilityLabel,
-                  padding: EdgeInsets.zero,
-                  // ignore: prefer_expression_function_bodies
-                  onPressed: _audioPlayerReady ? _togglePlaying : null,
-
-                  icon: _audioPlayer.isPlaying
-                      ? (InheritedChatTheme.of(context).theme.pauseButtonIcon !=
-                              null
-                          ? Image.asset(
-                              InheritedChatTheme.of(context)
-                                  .theme
-                                  .pauseButtonIcon!,
-                              color: _color,
-                            )
-                          : Icon(
-                              Icons.pause_circle_filled,
-                              color: _color,
-                              size: 44,
-                            ))
-                      : (InheritedChatTheme.of(context).theme.playButtonIcon !=
-                              null
-                          ? Image.asset(
-                              InheritedChatTheme.of(context)
-                                  .theme
-                                  .playButtonIcon!,
-                              color: _color,
-                            )
-                          : Icon(
-                              Icons.play_circle_fill,
-                              color: _color,
-                              size: 44,
-                            )),
-                ),
-          Flexible(
-            child: Container(
-              margin: const EdgeInsets.only(
-                left: 16,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  SizedBox(
-                    width: widget.messageWidth.toDouble(),
-                    height: 20,
-                    child: _audioPlayer.isPlaying || _audioPlayer.isPaused
-                        ? StreamBuilder<PlaybackDisposition>(
-                            stream: _audioPlayer.onProgress,
-                            builder: (context, snapshot) => WaveForm(
-                              accessibilityLabel: InheritedL10n.of(context)
-                                  .l10n
-                                  .audioTrackAccessibilityLabel,
-                              onTap: _togglePlaying,
-                              onStartSeeking: () async {
-                                _wasPlayingBeforeSeeking =
-                                    _audioPlayer.isPlaying;
-                                if (_audioPlayer.isPlaying) {
-                                  await _audioPlayer.pausePlayer();
-                                }
-                              },
-                              onSeek: snapshot.hasData
-                                  ? (newPosition) async {
-                                      await _audioPlayer
-                                          .seekToPlayer(newPosition);
-                                      if (_wasPlayingBeforeSeeking) {
-                                        await _audioPlayer.resumePlayer();
-                                        _wasPlayingBeforeSeeking = false;
-                                      }
-                                    }
-                                  : null,
-                              waveForm: widget.message.waveForm,
-                              color: const Color(0xff1d1c21),
-                              duration: snapshot.hasData
-                                  ? snapshot.data!.duration
-                                  : widget.message.length,
-                              position: snapshot.hasData
-                                  ? snapshot.data!.position
-                                  : Duration.zero,
-                            ),
-                          )
-                        : WaveForm(
-                            accessibilityLabel: InheritedL10n.of(context)
-                                .l10n
-                                .audioTrackAccessibilityLabel,
-                            onTap: _togglePlaying,
-                            waveForm: widget.message.waveForm,
-                            color: const Color(0xff1d1c21),
-                            duration: widget.message.length,
-                            position: Duration.zero,
-                          ),
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  if (_audioPlayer.isPlaying || _audioPlayer.isPaused)
-                    StreamBuilder<PlaybackDisposition>(
-                      stream: _audioPlayer.onProgress,
-                      builder: (context, snapshot) => Text(
-                        AudioMessage.durationFormat.format(
-                          DateTime.fromMillisecondsSinceEpoch(
-                            snapshot.hasData
-                                ? snapshot.data!.duration.inMilliseconds -
-                                    snapshot.data!.position.inMilliseconds
-                                : widget.message.length.inMilliseconds,
-                          ).toUtc(),
-                        ),
-                        style: InheritedChatTheme.of(context)
-                            .theme
-                            .receivedMessageCaptionTextStyle
-                            .copyWith(
-                              color: const Color(0xff1d1d21),
-                            ),
-                        textWidthBasis: TextWidthBasis.longestLine,
+          if (widget.message.repliedMessage != null)
+            ReplyMessageWidget(
+              message: widget.message.repliedMessage,
+            ),
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              _isLoading
+                  ? const CircularProgressIndicator(
+                      backgroundColor: Colors.transparent,
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Color(0xFF1FD189),
                       ),
                     )
-                  else
-                    Text(
-                      AudioMessage.durationFormat.format(
-                        DateTime.fromMillisecondsSinceEpoch(
-                          widget.message.length.inMilliseconds,
-                        ).toUtc(),
-                      ),
-                      style: InheritedChatTheme.of(context)
-                          .theme
-                          .receivedMessageCaptionTextStyle
-                          .copyWith(
-                            color: const Color(0xff1d1d21),
-                          ),
-                      textWidthBasis: TextWidthBasis.longestLine,
+                  : IconButton(
+                      tooltip: _audioPlayer.isPlaying
+                          ? InheritedL10n.of(context)
+                              .l10n
+                              .pauseButtonAccessibilityLabel
+                          : InheritedL10n.of(context)
+                              .l10n
+                              .playButtonAccessibilityLabel,
+                      padding: EdgeInsets.zero,
+                      // ignore: prefer_expression_function_bodies
+                      onPressed: _audioPlayerReady ? _togglePlaying : null,
+
+                      icon: _audioPlayer.isPlaying
+                          ? (InheritedChatTheme.of(context)
+                                      .theme
+                                      .pauseButtonIcon !=
+                                  null
+                              ? Image.asset(
+                                  InheritedChatTheme.of(context)
+                                      .theme
+                                      .pauseButtonIcon!,
+                                  color: _color,
+                                )
+                              : Icon(
+                                  Icons.pause_circle_filled,
+                                  color: _color,
+                                  size: 44,
+                                ))
+                          : (InheritedChatTheme.of(context)
+                                      .theme
+                                      .playButtonIcon !=
+                                  null
+                              ? Image.asset(
+                                  InheritedChatTheme.of(context)
+                                      .theme
+                                      .playButtonIcon!,
+                                  color: _color,
+                                )
+                              : Icon(
+                                  Icons.play_circle_fill,
+                                  color: _color,
+                                  size: 44,
+                                )),
                     ),
-                ],
+              Flexible(
+                child: Container(
+                  margin: const EdgeInsets.only(
+                    left: 16,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SizedBox(
+                        width: widget.messageWidth.toDouble(),
+                        height: 20,
+                        child: _audioPlayer.isPlaying || _audioPlayer.isPaused
+                            ? StreamBuilder<PlaybackDisposition>(
+                                stream: _audioPlayer.onProgress,
+                                builder: (context, snapshot) => WaveForm(
+                                  accessibilityLabel: InheritedL10n.of(context)
+                                      .l10n
+                                      .audioTrackAccessibilityLabel,
+                                  onTap: _togglePlaying,
+                                  onStartSeeking: () async {
+                                    _wasPlayingBeforeSeeking =
+                                        _audioPlayer.isPlaying;
+                                    if (_audioPlayer.isPlaying) {
+                                      await _audioPlayer.pausePlayer();
+                                    }
+                                  },
+                                  onSeek: snapshot.hasData
+                                      ? (newPosition) async {
+                                          await _audioPlayer
+                                              .seekToPlayer(newPosition);
+                                          if (_wasPlayingBeforeSeeking) {
+                                            await _audioPlayer.resumePlayer();
+                                            _wasPlayingBeforeSeeking = false;
+                                          }
+                                        }
+                                      : null,
+                                  waveForm: widget.message.waveForm,
+                                  color: const Color(0xff1d1c21),
+                                  duration: snapshot.hasData
+                                      ? snapshot.data!.duration
+                                      : widget.message.length,
+                                  position: snapshot.hasData
+                                      ? snapshot.data!.position
+                                      : Duration.zero,
+                                ),
+                              )
+                            : WaveForm(
+                                accessibilityLabel: InheritedL10n.of(context)
+                                    .l10n
+                                    .audioTrackAccessibilityLabel,
+                                onTap: _togglePlaying,
+                                waveForm: widget.message.waveForm,
+                                color: const Color(0xff1d1c21),
+                                duration: widget.message.length,
+                                position: Duration.zero,
+                              ),
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      if (_audioPlayer.isPlaying || _audioPlayer.isPaused)
+                        StreamBuilder<PlaybackDisposition>(
+                          stream: _audioPlayer.onProgress,
+                          builder: (context, snapshot) => Text(
+                            AudioMessage.durationFormat.format(
+                              DateTime.fromMillisecondsSinceEpoch(
+                                snapshot.hasData
+                                    ? snapshot.data!.duration.inMilliseconds -
+                                        snapshot.data!.position.inMilliseconds
+                                    : widget.message.length.inMilliseconds,
+                              ).toUtc(),
+                            ),
+                            style: InheritedChatTheme.of(context)
+                                .theme
+                                .receivedMessageCaptionTextStyle
+                                .copyWith(
+                                  color: const Color(0xff1d1d21),
+                                ),
+                            textWidthBasis: TextWidthBasis.longestLine,
+                          ),
+                        )
+                      else
+                        Text(
+                          AudioMessage.durationFormat.format(
+                            DateTime.fromMillisecondsSinceEpoch(
+                              widget.message.length.inMilliseconds,
+                            ).toUtc(),
+                          ),
+                          style: InheritedChatTheme.of(context)
+                              .theme
+                              .receivedMessageCaptionTextStyle
+                              .copyWith(
+                                color: const Color(0xff1d1d21),
+                              ),
+                          textWidthBasis: TextWidthBasis.longestLine,
+                        ),
+                    ],
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ],
       ),

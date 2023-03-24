@@ -189,11 +189,13 @@ class _ImageMessageState extends State<ImageMessage> {
           children: [
             if (widget.message.repliedMessage != null)
               _repliedMessageBuilder(user),
-            AspectRatio(
-              aspectRatio: _size.aspectRatio > 0 ? _size.aspectRatio : 1,
-              child: Image(
-                fit: BoxFit.contain,
-                image: _image!,
+            Expanded(
+              child: AspectRatio(
+                aspectRatio: _size.aspectRatio > 0 ? _size.aspectRatio : 1,
+                child: Image(
+                  fit: BoxFit.contain,
+                  image: _image!,
+                ),
               ),
             ),
           ],

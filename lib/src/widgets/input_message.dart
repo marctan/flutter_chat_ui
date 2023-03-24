@@ -17,7 +17,7 @@ class InputMessage extends StatefulWidget {
   final Function(types.PartialText message, {types.Message? repliedMessage})
       onSendMessage;
   final Function onCancelReply;
-  final Function? onAttachmentPressed;
+  final Function({types.Message? repliedMessage})? onAttachmentPressed;
   final bool? isAttachmentUploading;
   final bool enableAttachments;
 
@@ -33,6 +33,7 @@ class InputMessage extends StatefulWidget {
     required String filePath,
     required List<double> waveForm,
     required String mimeType,
+    types.Message? repliedMessage,
   })? onAudioRecorded;
 
   /// Called right when the user presses the video recording button
@@ -46,6 +47,7 @@ class InputMessage extends StatefulWidget {
     required Duration length,
     required String filePath,
     required String mimeType,
+    types.Message? repliedMessage,
   })? onVideoRecorded;
 
   const InputMessage({
@@ -126,6 +128,7 @@ class _InputMessageState extends State<InputMessage> {
   }
 
   Future<void> _toggleAudioRecording() async {
+    final inheritedReply = InheritedRepliedMessage.of(context);
     if (!_recordingAudio) {
       if (widget.onStartAudioRecording != null &&
           !(await widget.onStartAudioRecording!())) {
@@ -146,6 +149,7 @@ class _InputMessageState extends State<InputMessage> {
           filePath: audioRecording.filePath,
           waveForm: audioRecording.decibelLevels,
           mimeType: audioRecording.mimeType,
+          repliedMessage: inheritedReply.repliedMessage,
         );
         setState(() {
           _audioUploading = false;
@@ -164,6 +168,7 @@ class _InputMessageState extends State<InputMessage> {
         !(await widget.onStartVideoRecording!())) {
       return;
     }
+    final inheritedReply = InheritedRepliedMessage.of(context);
 
     final l10n = InheritedL10n.of(context).l10n;
     final theme = InheritedChatTheme.of(context).theme;
@@ -207,6 +212,7 @@ class _InputMessageState extends State<InputMessage> {
         length: file.length,
         filePath: file.filePath,
         mimeType: file.mimeType,
+        repliedMessage: inheritedReply.repliedMessage,
       );
       setState(() {
         _videoUploading = false;
@@ -311,7 +317,10 @@ class _InputMessageState extends State<InputMessage> {
       widget.isAttachmentUploading ?? false
           ? const CircularProgressIndicator()
           : GestureDetector(
-              onTap: () => widget.onAttachmentPressed?.call(),
+              onTap: () => widget.onAttachmentPressed!(
+                      repliedMessage:
+                          InheritedRepliedMessage.of(context).repliedMessage)
+                  ?.call(),
               child: const Icon(
                 Icons.add,
                 color: Color(0xFF0A81FF),

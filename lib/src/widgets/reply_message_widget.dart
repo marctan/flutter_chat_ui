@@ -15,6 +15,8 @@ class ReplyMessageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     String _text = '';
     String? _imageUri;
+    String? _audioUri;
+    String? _videoUri;
     if (message != null) {
       switch (message?.type) {
         case types.MessageType.file:
@@ -26,6 +28,16 @@ class ReplyMessageWidget extends StatelessWidget {
           _text = "Photo";
           _imageUri = imageMessage.uri;
           break;
+        case types.MessageType.audio:
+          final audioMessage = message as types.AudioMessage;
+          _text = "Audio";
+          _audioUri = audioMessage.uri;
+          break;
+        case types.MessageType.video:
+          final videoMessage = message as types.VideoMessage;
+          _text = "Video";
+          _videoUri = videoMessage.uri;
+          break;
         case types.MessageType.text:
           final textMessage = message as types.TextMessage;
           _text = textMessage.text;
@@ -36,30 +48,57 @@ class ReplyMessageWidget extends StatelessWidget {
     }
 
     return IntrinsicHeight(
-        child: Row(
-      children: [
-        Container(
-          color: Color(0xFF1BB9D5),
-          width: 4,
-        ),
-        const SizedBox(width: 8),
-        _imageUri != null
-            ? Container(
-                width: 44,
-                height: 44,
-                margin: const EdgeInsets.only(right: 16),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    _imageUri,
-                    fit: BoxFit.cover,
+      child: Row(
+        children: [
+          Container(
+            color: const Color(0xFF1BB9D5),
+            width: 4,
+          ),
+          const SizedBox(width: 8),
+          _imageUri != null
+              ? Container(
+                  width: 44,
+                  height: 44,
+                  margin: const EdgeInsets.only(right: 16),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      _imageUri,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
-              )
-            : Container(),
-        Expanded(child: buildReplyMessage(_text)),
-      ],
-    ));
+                )
+              : Container(),
+          _audioUri != null
+              ? Container(
+                  width: 44,
+                  height: 44,
+                  margin: const EdgeInsets.only(right: 16),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: const Icon(
+                      Icons.audio_file,
+                    ),
+                  ),
+                )
+              : Container(),
+          _videoUri != null
+              ? Container(
+                  width: 44,
+                  height: 44,
+                  margin: const EdgeInsets.only(right: 16),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: const Icon(
+                      Icons.video_file,
+                    ),
+                  ),
+                )
+              : Container(),
+          Expanded(child: buildReplyMessage(_text)),
+        ],
+      ),
+    );
   }
 
   Widget buildReplyMessage(String _text) => Column(
@@ -72,7 +111,8 @@ class ReplyMessageWidget extends StatelessWidget {
                   '${message?.metadata?['userName']}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontWeight: FontWeight.bold,color: Color(0xFF1BB9D5)),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, color: Color(0xFF1BB9D5)),
                 ),
               ),
               if (onCancelReply != null)
