@@ -259,11 +259,14 @@ class _InputMessageState extends State<InputMessage> {
                     children: [
                       if (isReplying) buildReply(),
                       TextField(
+                        keyboardType: TextInputType.multiline,
+                        textInputAction: TextInputAction.newline,
                         controller: _textController,
                         focusNode: widget.focusNode,
                         textCapitalization: TextCapitalization.sentences,
                         autocorrect: true,
                         enableSuggestions: true,
+                        maxLines: null,
                         decoration: InputDecoration(
                           contentPadding: const EdgeInsets.only(left: 15),
                           filled: true,
