@@ -318,7 +318,7 @@ class _InputMessageState extends State<InputMessage> {
   List<Widget> attachmentButton() {
     return [
       widget.isAttachmentUploading ?? false
-          ? const CircularProgressIndicator()
+          ? const SizedBox.shrink()
           : GestureDetector(
               onTap: () => widget.onAttachmentPressed!(
                       repliedMessage:

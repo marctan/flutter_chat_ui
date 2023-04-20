@@ -12,6 +12,7 @@ environment:
 
 dependencies:
   diffutil_dart: ^3.0.0
+  bubble: ^1.2.1
   equatable: ^2.0.5
   flutter:
     sdk: flutter

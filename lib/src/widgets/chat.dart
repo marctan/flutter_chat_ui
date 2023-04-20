@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/src/widgets/inherited_replied_message.dart';
@@ -65,6 +66,8 @@ class Chat extends StatefulWidget {
     this.imageMessageBuilder,
     this.inputOptions = const InputOptions(),
     this.isAttachmentUploading,
+    this.fileName,
+    this.fileSize,
     this.isLastPage,
     this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
     this.l10n = const ChatL10nEn(),
@@ -227,6 +230,10 @@ class Chat extends StatefulWidget {
   /// See [Input.isAttachmentUploading].
   final bool? isAttachmentUploading;
 
+  final String? fileName;
+
+  final int? fileSize;
+
   /// See [ChatList.isLastPage].
   final bool? isLastPage;
 
@@ -387,6 +394,8 @@ class Chat extends StatefulWidget {
 
 /// [Chat] widget state.
 class ChatState extends State<Chat> {
+  late int maxWidth = 0;
+
   /// Used to get the correct auto scroll index from [_autoScrollIndexById].
   static const String _unreadHeaderId = 'unread_header_id';
 
@@ -524,6 +533,196 @@ class ChatState extends State<Chat> {
                                   ),
                                 ),
                         ),
+                        (widget.isAttachmentUploading ?? false)
+                            ? Container(
+                                alignment: AlignmentDirectional.centerEnd,
+                                margin: EdgeInsetsDirectional.only(
+                                  bottom: 20,
+                                  end: MediaQuery.of(context).padding.right,
+                                ),
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    maxWidth: maxWidth.toDouble(),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      const IconButton(
+                                        onPressed: null,
+                                        icon: Icon(
+                                          Icons.delete,
+                                          color: Colors.grey,
+                                          size: 20,
+                                        ),
+                                      ),
+                                      Flexible(
+                                        child: Bubble(
+                                          style: const BubbleStyle(
+                                            nip: BubbleNip.rightTop,
+                                            color: Color(0xFFDCF8C6),
+                                            elevation: 1,
+                                            margin: BubbleEdges.only(
+                                                top: 8, left: 0),
+                                          ),
+                                          child: Builder(builder: (context) {
+                                            final color = InheritedChatTheme.of(
+                                                    context)
+                                                .theme
+                                                .sentMessageDocumentIconColor;
+
+                                            return Semantics(
+                                              label: InheritedL10n.of(context)
+                                                  .l10n
+                                                  .fileButtonAccessibilityLabel,
+                                              child: Container(
+                                                padding: EdgeInsetsDirectional
+                                                    .fromSTEB(
+                                                  InheritedChatTheme.of(context)
+                                                      .theme
+                                                      .messageInsetsVertical,
+                                                  InheritedChatTheme.of(context)
+                                                      .theme
+                                                      .messageInsetsVertical,
+                                                  InheritedChatTheme.of(context)
+                                                      .theme
+                                                      .messageInsetsHorizontal,
+                                                  InheritedChatTheme.of(context)
+                                                      .theme
+                                                      .messageInsetsVertical,
+                                                ),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: color
+                                                                .withOpacity(
+                                                                    0.2),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        21),
+                                                          ),
+                                                          height: 42,
+                                                          width: 42,
+                                                          child: Stack(
+                                                            alignment: Alignment
+                                                                .center,
+                                                            children: [
+                                                              if (widget
+                                                                      .isAttachmentUploading ??
+                                                                  false)
+                                                                Positioned.fill(
+                                                                  child:
+                                                                      CircularProgressIndicator(
+                                                                    color:
+                                                                        color,
+                                                                    strokeWidth:
+                                                                        2,
+                                                                  ),
+                                                                ),
+                                                              InheritedChatTheme
+                                                                              .of(
+                                                                        context,
+                                                                      )
+                                                                          .theme
+                                                                          .documentIcon !=
+                                                                      null
+                                                                  ? InheritedChatTheme
+                                                                          .of(
+                                                                      context,
+                                                                    )
+                                                                      .theme
+                                                                      .documentIcon!
+                                                                  : Image.asset(
+                                                                      'assets/icon-document.png',
+                                                                      color:
+                                                                          color,
+                                                                      package:
+                                                                          'flutter_chat_ui',
+                                                                    ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Flexible(
+                                                          child: Container(
+                                                            margin:
+                                                                const EdgeInsetsDirectional
+                                                                    .only(
+                                                              start: 16,
+                                                            ),
+                                                            child: Column(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                Text(
+                                                                  widget.fileName ??
+                                                                      '',
+                                                                  style: InheritedChatTheme.of(
+                                                                          context)
+                                                                      .theme
+                                                                      .sentMessageBodyTextStyle,
+                                                                  textWidthBasis:
+                                                                      TextWidthBasis
+                                                                          .longestLine,
+                                                                ),
+                                                                Container(
+                                                                  margin:
+                                                                      const EdgeInsets
+                                                                          .only(
+                                                                    top: 4,
+                                                                  ),
+                                                                  child: Text(
+                                                                    formatBytes(
+                                                                      widget.fileSize
+                                                                              ?.truncate() ??
+                                                                          0,
+                                                                    ),
+                                                                    style: InheritedChatTheme
+                                                                            .of(
+                                                                      context,
+                                                                    )
+                                                                        .theme
+                                                                        .sentMessageCaptionTextStyle,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          }),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 4,
+                                        ),
+                                        child: Image.asset(
+                                          'assets/icon-delivered-2.png',
+                                          color: const Color(0xFF0A81FF),
+                                          package: 'flutter_chat_ui',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : const SizedBox.shrink(),
                         InputMessage(
                           enableAttachments: widget.enableAttachments,
                           focusNode: focusNode,
@@ -666,7 +865,7 @@ class ChatState extends State<Chat> {
             widget.showUserAvatars && message.author.id != widget.user.id
                 ? min(size * 0.72, 440).floor()
                 : min(size * 0.78, 440).floor();
-
+        maxWidth = min(size * 0.78, 440).floor();
         messageWidget = Message(
           roomType: widget.roomType,
           onStartAudioVideoPlayback: widget.onStartAudioVideoPlayback,
