@@ -5,6 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/src/widgets/preview_picture.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'recording_indicator.dart';
 
@@ -39,6 +40,7 @@ class _VideoRecorderState extends State<VideoRecorder>
   DateTime? _recordingStopTime;
   Timer? _recordingTimer;
   late File _picture;
+  XFile? _videoFile;
 
   bool _isVideoCameraSelected = false;
 
@@ -292,8 +294,7 @@ class _VideoRecorderState extends State<VideoRecorder>
                                           package: 'flutter_chat_ui',
                                         ),
                                   onPressed: _controller != null &&
-                                          _controller!.value.isInitialized &&
-                                          _controller!.value.isRecordingVideo
+                                          _controller!.value.isInitialized
                                       ? _sendVideoRecording
                                       : null,
                                   padding: EdgeInsets.zero,
@@ -326,19 +327,23 @@ class _VideoRecorderState extends State<VideoRecorder>
                     elevation: 1.0,
                     onPressed: () async {
                       if (_isVideoCameraSelected) {
-                        await _startRecording();
+                        _recordingStartTime == null
+                            ? await _startRecording()
+                            : await _stopRecording();
                       } else {
                         final rawImage = await _takePicture();
                         _picture = File(rawImage!.path);
                       }
                     },
                     child: Visibility(
-                      visible: _recordingStartTime == null,
-                      child: const Icon(
-                        shadows: <Shadow>[
+                      visible: _videoFile == null,
+                      child: Icon(
+                        shadows: const <Shadow>[
                           Shadow(color: Colors.grey, blurRadius: 15.0),
                         ],
-                        Icons.camera_sharp,
+                        _recordingStartTime == null
+                            ? Icons.camera_sharp
+                            : Icons.stop,
                         color: Colors.white,
                         size: 80,
                       ),
@@ -376,11 +381,17 @@ class _VideoRecorderState extends State<VideoRecorder>
                         onPressed: _controller != null &&
                                 _controller!.value.isInitialized &&
                                 !_controller!.value.isRecordingVideo
-                            ? () {
+                            ? () async {
                                 _currentCameraIndex =
                                     (_currentCameraIndex! + 1) %
                                         _cameras.length;
-                                onNewCameraSelected(
+                                final prefs =
+                                    await SharedPreferences.getInstance();
+                                await prefs.setInt(
+                                  'cameraIndex',
+                                  _currentCameraIndex ?? 0,
+                                );
+                                await onNewCameraSelected(
                                   _cameras[_currentCameraIndex!],
                                 );
                               }
@@ -414,6 +425,9 @@ class _VideoRecorderState extends State<VideoRecorder>
       } else {
         _currentCameraIndex = 0;
       }
+      final prefs = await SharedPreferences.getInstance();
+      _currentCameraIndex = prefs.getInt('cameraIndex') ??
+          (frontCameraIndex > -1 ? frontCameraIndex : 0);
       await onNewCameraSelected(_cameras[_currentCameraIndex!]);
 
       // await _startRecording();
@@ -456,6 +470,17 @@ class _VideoRecorderState extends State<VideoRecorder>
     setState(() {});
   }
 
+  Future<void> _stopRecording() async {
+    _recordingTimer?.cancel();
+    final cameraController = _controller;
+    if (cameraController == null) return;
+    if (!cameraController.value.isInitialized) return;
+    if (!cameraController.value.isRecordingVideo) return;
+
+    _videoFile = await cameraController.stopVideoRecording();
+    setState(() {});
+  }
+
   Future<XFile?> _takePicture() async {
     final cameraController = _controller;
     if (cameraController!.value.isTakingPicture) {
@@ -484,21 +509,25 @@ class _VideoRecorderState extends State<VideoRecorder>
     final cameraController = _controller;
     if (cameraController == null) return;
     if (!cameraController.value.isInitialized) return;
-    if (!cameraController.value.isRecordingVideo) return;
+    if (_videoFile == null) {
+      if (!cameraController.value.isRecordingVideo) return;
+    }
     _recordingStopTime = DateTime.now();
     _recordingTimer?.cancel();
-    final videoFile = await cameraController.stopVideoRecording();
-    setState(() {});
-    Navigator.of(context).pop(
-      VideoRecording(
-        filePath: videoFile.path,
-        mimeType: videoFile.mimeType ?? 'video/mp4',
-        length: Duration(
-          milliseconds: _recordingStopTime!.millisecondsSinceEpoch -
-              _recordingStartTime!.millisecondsSinceEpoch,
+    _videoFile = _videoFile ?? await cameraController.stopVideoRecording();
+    if (_videoFile != null) {
+      setState(() {});
+      Navigator.of(context).pop(
+        VideoRecording(
+          filePath: _videoFile!.path,
+          mimeType: _videoFile!.mimeType ?? 'video/mp4',
+          length: Duration(
+            milliseconds: _recordingStopTime!.millisecondsSinceEpoch -
+                _recordingStartTime!.millisecondsSinceEpoch,
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Future<void> _sendPicture() async {
