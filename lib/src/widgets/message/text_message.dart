@@ -28,6 +28,8 @@ class TextMessage extends StatelessWidget {
     required this.showName,
     required this.usePreviewData,
     this.userAgent,
+    this.useWidgetWrap = false,
+    this.widgetWrapWidthExtent,
     required this.showUserNameForRepliedMessage,
   });
   final bool showUserNameForRepliedMessage;
@@ -62,6 +64,12 @@ class TextMessage extends StatelessWidget {
 
   /// User agent to fetch preview data with.
   final String? userAgent;
+
+  /// Use individual text widget wrapping.
+  final bool useWidgetWrap;
+
+  /// Widget wrapping width extent.
+  final double? widgetWrapWidthExtent;
 
   @override
   Widget build(BuildContext context) {
@@ -185,6 +193,9 @@ class TextMessage extends StatelessWidget {
             codeTextStyle: codeTextStyle,
             options: options,
             text: message.text,
+            useWidgetWrap: useWidgetWrap,
+            widgetWrapWidthExtent: widgetWrapWidthExtent,
+            //overflow: TextOverflow.ellipsis,
           ),
       ],
     );
@@ -202,6 +213,8 @@ class TextMessageText extends StatelessWidget {
     this.maxLines,
     this.options = const TextMessageOptions(),
     this.overflow = TextOverflow.clip,
+    this.useWidgetWrap = false,
+    this.widgetWrapWidthExtent,
     required this.text,
   });
 
@@ -229,8 +242,60 @@ class TextMessageText extends StatelessWidget {
   /// Text that is shown as markdown.
   final String text;
 
+  /// Enable widget wrap.
+  final bool useWidgetWrap;
+
+  /// Width extent before a line is wrapped.
+  final double? widgetWrapWidthExtent;
+
+  List<String> _deriveLinesFromOverflowString(String text, double width) {
+    final textArray = text.split(' ');
+    final lines = <String>[];
+    var lineIndex = 0;
+    var buffer = '';
+
+    textArray.forEach((element) {
+      buffer = (lines.isNotEmpty) ? lines[lineIndex] : buffer;
+      final textSpan = TextSpan(text: buffer, style: bodyTextStyle);
+      final tp = TextPainter(text: textSpan, textDirection: TextDirection.ltr);
+      tp.layout();
+
+      buffer = (tp.width < width) ? '$buffer $element' : buffer = '$element ';
+      lineIndex = (tp.width < width) ? lineIndex : lineIndex + 1;
+
+      if (lines.isNotEmpty && lines.length - 1 == lineIndex) {
+        lines[lineIndex] = buffer.trim();
+      } else {
+        lines.add(buffer.trim());
+      }
+    });
+
+    return lines;
+  }
+
   @override
-  Widget build(BuildContext context) => ParsedText(
+  Widget build(BuildContext context) => (useWidgetWrap)
+      ? _buildWrappedText(context)
+      : _buildParsedText(context, text);
+
+  Widget _buildWrappedText(BuildContext context) {
+    final widthLimit =
+        widgetWrapWidthExtent ?? MediaQuery.of(context).size.width;
+    final lines = _deriveLinesFromOverflowString(text, widthLimit);
+    List<Widget> children = [];
+
+    lines.forEach((e) {
+      children.add(_buildParsedText(context, e));
+    });
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: children,
+    );
+  }
+
+  Widget _buildParsedText(BuildContext context, String text) => ParsedText(
         parse: [
           ...options.matchers,
           MatchText(
@@ -321,6 +386,7 @@ class TextMessageText extends StatelessWidget {
         regexOptions: const RegexOptions(multiLine: true, dotAll: true),
         selectable: options.isTextSelectable,
         style: bodyTextStyle,
+        softWrap: true,
         text: text,
         textWidthBasis: TextWidthBasis.longestLine,
       );
