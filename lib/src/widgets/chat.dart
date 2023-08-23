@@ -102,6 +102,8 @@ class Chat extends StatefulWidget {
     this.usePreviewData = true,
     this.enableSwipe = true,
     this.enableAttachments = true,
+    this.enableAudio = true,
+    this.enableVideo = true,
     required this.user,
     this.userAgent,
     this.useTopSafeAreaInset,
@@ -386,6 +388,8 @@ class Chat extends StatefulWidget {
       videoMessageBuilder;
   final bool enableSwipe;
   final bool enableAttachments;
+  final bool enableAudio;
+  final bool enableVideo;
   final void Function(types.Message)? onStartAudioVideoPlayback;
 
   @override
@@ -725,6 +729,8 @@ class ChatState extends State<Chat> {
                             : const SizedBox.shrink(),
                         InputMessage(
                           enableAttachments: widget.enableAttachments,
+                          enableAudio: widget.enableAudio,
+                          enableVideo: widget.enableVideo,
                           focusNode: focusNode,
                           replyMessage: _repliedMessage,
                           onCancelReply: _onCancelReplyPressed,
@@ -739,45 +745,41 @@ class ChatState extends State<Chat> {
                           },
                           isAttachmentUploading: widget.isAttachmentUploading,
                           onStartAudioRecording: widget.onStartAudioRecording,
-                          onAudioRecorded: widget.onAudioRecorded == null
-                              ? null
-                              : ({
-                                  required filePath,
-                                  required length,
-                                  required mimeType,
-                                  repliedMessage,
-                                  required waveForm,
-                                }) {
-                                  setState(() {
-                                    _repliedMessage = null;
-                                  });
-                                  return widget.onAudioRecorded!(
-                                    filePath: filePath,
-                                    length: length,
-                                    mimeType: mimeType,
-                                    repliedMessage: repliedMessage,
-                                    waveForm: waveForm,
-                                  );
-                                },
+                          onAudioRecorded: ({
+                            required filePath,
+                            required length,
+                            required mimeType,
+                            repliedMessage,
+                            required waveForm,
+                          }) {
+                            setState(() {
+                              _repliedMessage = null;
+                            });
+                            return widget.onAudioRecorded!(
+                              filePath: filePath,
+                              length: length,
+                              mimeType: mimeType,
+                              repliedMessage: repliedMessage,
+                              waveForm: waveForm,
+                            );
+                          },
                           onStartVideoRecording: widget.onStartVideoRecording,
-                          onVideoRecorded: widget.onVideoRecorded == null
-                              ? null
-                              : ({
-                                  required filePath,
-                                  required length,
-                                  required mimeType,
-                                  repliedMessage,
-                                }) {
-                                  setState(() {
-                                    _repliedMessage = null;
-                                  });
-                                  return widget.onVideoRecorded!(
-                                    filePath: filePath,
-                                    length: length,
-                                    mimeType: mimeType,
-                                    repliedMessage: repliedMessage,
-                                  );
-                                },
+                          onVideoRecorded: ({
+                            required filePath,
+                            required length,
+                            required mimeType,
+                            repliedMessage,
+                          }) {
+                            setState(() {
+                              _repliedMessage = null;
+                            });
+                            return widget.onVideoRecorded!(
+                              filePath: filePath,
+                              length: length,
+                              mimeType: mimeType,
+                              repliedMessage: repliedMessage,
+                            );
+                          },
                         ),
                       ],
                     ),

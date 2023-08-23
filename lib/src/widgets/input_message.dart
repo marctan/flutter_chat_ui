@@ -20,6 +20,8 @@ class InputMessage extends StatefulWidget {
   final Function({types.Message? repliedMessage})? onAttachmentPressed;
   final bool? isAttachmentUploading;
   final bool enableAttachments;
+  final bool enableAudio;
+  final bool enableVideo;
 
   /// Called right when the user presses the audio recording button
   /// And returns true if and only if audio recording is possible
@@ -58,6 +60,8 @@ class InputMessage extends StatefulWidget {
     this.onAttachmentPressed,
     this.isAttachmentUploading,
     this.enableAttachments = true,
+    this.enableAudio = true,
+    this.enableVideo = true,
     this.onAudioRecorded,
     this.onStartAudioRecording,
     this.onVideoRecorded,
@@ -301,13 +305,16 @@ class _InputMessageState extends State<InputMessage> {
           ),
           Visibility(
             visible: !kIsWeb &&
+                widget.enableVideo &&
                 widget.onVideoRecorded != null &&
                 !_sendButtonVisible &&
                 !_recordingAudio,
             child: _videoWidget(),
           ),
           Visibility(
-            visible: widget.onAudioRecorded != null && !_sendButtonVisible,
+            visible: widget.enableAudio &&
+                widget.onAudioRecorded != null &&
+                !_sendButtonVisible,
             child: _audioWidget(),
           ),
         ],
