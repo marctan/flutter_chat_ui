@@ -739,41 +739,45 @@ class ChatState extends State<Chat> {
                           },
                           isAttachmentUploading: widget.isAttachmentUploading,
                           onStartAudioRecording: widget.onStartAudioRecording,
-                          onAudioRecorded: ({
-                            required filePath,
-                            required length,
-                            required mimeType,
-                            repliedMessage,
-                            required waveForm,
-                          }) {
-                            setState(() {
-                              _repliedMessage = null;
-                            });
-                            return widget.onAudioRecorded!(
-                              filePath: filePath,
-                              length: length,
-                              mimeType: mimeType,
-                              repliedMessage: repliedMessage,
-                              waveForm: waveForm,
-                            );
-                          },
+                          onAudioRecorded: widget.onAudioRecorded == null
+                              ? null
+                              : ({
+                                  required filePath,
+                                  required length,
+                                  required mimeType,
+                                  repliedMessage,
+                                  required waveForm,
+                                }) {
+                                  setState(() {
+                                    _repliedMessage = null;
+                                  });
+                                  return widget.onAudioRecorded!(
+                                    filePath: filePath,
+                                    length: length,
+                                    mimeType: mimeType,
+                                    repliedMessage: repliedMessage,
+                                    waveForm: waveForm,
+                                  );
+                                },
                           onStartVideoRecording: widget.onStartVideoRecording,
-                          onVideoRecorded: ({
-                            required filePath,
-                            required length,
-                            required mimeType,
-                            repliedMessage,
-                          }) {
-                            setState(() {
-                              _repliedMessage = null;
-                            });
-                            return widget.onVideoRecorded!(
-                              filePath: filePath,
-                              length: length,
-                              mimeType: mimeType,
-                              repliedMessage: repliedMessage,
-                            );
-                          },
+                          onVideoRecorded: widget.onVideoRecorded == null
+                              ? null
+                              : ({
+                                  required filePath,
+                                  required length,
+                                  required mimeType,
+                                  repliedMessage,
+                                }) {
+                                  setState(() {
+                                    _repliedMessage = null;
+                                  });
+                                  return widget.onVideoRecorded!(
+                                    filePath: filePath,
+                                    length: length,
+                                    mimeType: mimeType,
+                                    repliedMessage: repliedMessage,
+                                  );
+                                },
                         ),
                       ],
                     ),
