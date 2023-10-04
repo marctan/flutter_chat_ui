@@ -20,6 +20,7 @@ class InputMessage extends StatefulWidget {
   final Function({types.Message? repliedMessage})? onAttachmentPressed;
   final bool? isAttachmentUploading;
   final bool enableAttachments;
+  final bool isOtherUserDeleted;
   final bool enableAudio;
   final bool enableVideo;
 
@@ -60,6 +61,7 @@ class InputMessage extends StatefulWidget {
     this.onAttachmentPressed,
     this.isAttachmentUploading,
     this.enableAttachments = true,
+    this.isOtherUserDeleted = false,
     this.enableAudio = true,
     this.enableVideo = true,
     this.onAudioRecorded,
@@ -242,84 +244,95 @@ class _InputMessageState extends State<InputMessage> {
 
     final isReplying = widget.replyMessage != null;
 
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.all(8),
-      child: Row(
-        children: <Widget>[
-          if (widget.enableAttachments &&
-              widget.onAttachmentPressed != null &&
-              !_recordingAudio)
-            ...attachmentButton(),
-          const SizedBox(width: 15),
-          Expanded(
-            child: _recordingAudio
-                ? AudioRecorder(
-                    key: _audioRecorderKey,
-                    onCancelRecording: _cancelRecording,
-                    disabled: _audioUploading,
-                  )
-                : Column(
-                    children: [
-                      if (isReplying) buildReply(),
-                      TextField(
-                        keyboardType: TextInputType.multiline,
-                        textInputAction: TextInputAction.newline,
-                        controller: _textController,
-                        focusNode: widget.focusNode,
-                        textCapitalization: TextCapitalization.sentences,
-                        autocorrect: true,
-                        enableSuggestions: true,
-                        maxLines: null,
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.only(left: 15),
-                          filled: true,
-                          fillColor: Colors.grey[100],
-                          hintText: 'Type a message',
-                          hintStyle: const TextStyle(fontSize: 16),
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius: BorderRadius.only(
-                              topLeft:
-                                  isReplying ? Radius.zero : inputBottomRadius,
-                              topRight:
-                                  isReplying ? Radius.zero : inputBottomRadius,
-                              bottomLeft: inputBottomRadius,
-                              bottomRight: inputBottomRadius,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-          ),
-          Visibility(
-            visible: _sendButtonVisible,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: GestureDetector(
-                onTap: _handleSendPressed,
-                child: const Icon(Icons.send, color: Color(0xFF007AFF)),
+    return widget.isOtherUserDeleted
+        ? Padding(
+            padding: const EdgeInsets.only(bottom: 15.0),
+            child: Center(
+              child: Text(
+                'Cannot send messages to a Deleted User',
               ),
             ),
-          ),
-          Visibility(
-            visible: !kIsWeb &&
-                widget.enableVideo &&
-                widget.onVideoRecorded != null &&
-                !_sendButtonVisible &&
-                !_recordingAudio,
-            child: _videoWidget(),
-          ),
-          Visibility(
-            visible: widget.enableAudio &&
-                widget.onAudioRecorded != null &&
-                !_sendButtonVisible,
-            child: _audioWidget(),
-          ),
-        ],
-      ),
-    );
+          )
+        : Container(
+            color: Colors.white,
+            padding: const EdgeInsets.all(8),
+            child: Row(
+              children: <Widget>[
+                if (widget.enableAttachments &&
+                    widget.onAttachmentPressed != null &&
+                    !_recordingAudio)
+                  ...attachmentButton(),
+                const SizedBox(width: 15),
+                Expanded(
+                  child: _recordingAudio
+                      ? AudioRecorder(
+                          key: _audioRecorderKey,
+                          onCancelRecording: _cancelRecording,
+                          disabled: _audioUploading,
+                        )
+                      : Column(
+                          children: [
+                            if (isReplying) buildReply(),
+                            TextField(
+                              keyboardType: TextInputType.multiline,
+                              textInputAction: TextInputAction.newline,
+                              controller: _textController,
+                              focusNode: widget.focusNode,
+                              textCapitalization: TextCapitalization.sentences,
+                              autocorrect: true,
+                              enableSuggestions: true,
+                              maxLines: null,
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.only(left: 15),
+                                filled: true,
+                                fillColor: Colors.grey[100],
+                                hintText: 'Type a message',
+                                hintStyle: const TextStyle(fontSize: 16),
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: isReplying
+                                        ? Radius.zero
+                                        : inputBottomRadius,
+                                    topRight: isReplying
+                                        ? Radius.zero
+                                        : inputBottomRadius,
+                                    bottomLeft: inputBottomRadius,
+                                    bottomRight: inputBottomRadius,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                ),
+                Visibility(
+                  visible: _sendButtonVisible,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: GestureDetector(
+                      onTap: _handleSendPressed,
+                      child: const Icon(Icons.send, color: Color(0xFF007AFF)),
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: !kIsWeb &&
+                      widget.enableVideo &&
+                      widget.onVideoRecorded != null &&
+                      !_sendButtonVisible &&
+                      !_recordingAudio,
+                  child: _videoWidget(),
+                ),
+                Visibility(
+                  visible: widget.enableAudio &&
+                      widget.onAudioRecorded != null &&
+                      !_sendButtonVisible,
+                  child: _audioWidget(),
+                ),
+              ],
+            ),
+          );
   }
 
   List<Widget> attachmentButton() {

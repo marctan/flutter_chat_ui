@@ -102,6 +102,7 @@ class Chat extends StatefulWidget {
     this.usePreviewData = true,
     this.enableSwipe = true,
     this.enableAttachments = true,
+    this.isOtherUserDeleted = false,
     this.enableAudio = true,
     this.enableVideo = true,
     required this.user,
@@ -390,6 +391,7 @@ class Chat extends StatefulWidget {
   final bool enableAttachments;
   final bool enableAudio;
   final bool enableVideo;
+  final bool isOtherUserDeleted;
   final void Function(types.Message)? onStartAudioVideoPlayback;
 
   @override
@@ -728,6 +730,7 @@ class ChatState extends State<Chat> {
                               )
                             : const SizedBox.shrink(),
                         InputMessage(
+                          isOtherUserDeleted: widget.isOtherUserDeleted,
                           enableAttachments: widget.enableAttachments,
                           enableAudio: widget.enableAudio,
                           enableVideo: widget.enableVideo,
